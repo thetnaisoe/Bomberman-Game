@@ -23,6 +23,7 @@ public class Explosion {
     private int blastRange; // Range of the explosion
     private int explosionRadius; // Radius of the explosion (usually the same as range)
     private int timeToExplosion; // Time until the explosion occurs
+    
 
     public Explosion(int rowIndex, int colIndex, int duration, int blastRange) {
         this.rowIndex = rowIndex;
@@ -32,26 +33,7 @@ public class Explosion {
         this.explosionRadius = blastRange;
         this.timeToExplosion = duration;
     }
-    /* public List<Explodable> getObjectsInRange(JButton[][] buttons,Tile[][] tiles) {
-    
-    List<Explodable> objectsInRange = new ArrayList<>();
-    for (int dx = -blastRange; dx <= blastRange; dx++) {
-        int newX = rowIndex + dx;
-        for (int dy = -blastRange; dy <= blastRange; dy++) {
-            int newY = colIndex + dy;
-            // Ensure newX and newY are within the bounds of the game board
-            if (newX >= 0 && newX < tiles.length && newY >= 0 && newY < tiles[0].length) {
-                Tile tile = tiles[newX][newY];
-                // Check if the tile is explodable
-                if (tile instanceof Explodable) {
-                    System.out.println("Explodable found at: " + newX + ", " + newY); // Debug line
-                    objectsInRange.add((Explodable) tile);
-                }
-            }
-        }
-    }
-    return objectsInRange;
-}*/
+ 
     public List<Explodable> getObjectsInRange(JButton[][] buttons, Tile[][] tiles) {
     List<Explodable> objectsInRange = new ArrayList<>();
 
@@ -124,20 +106,60 @@ private boolean applyExplosionEffect(int newX, int newY, JButton[][] buttons, Ti
     if (newX < 0 || newX >= tiles.length || newY < 0 || newY >= tiles[0].length) {
         return false; // Out of bounds, stop explosion in this direction
     }
+    Player p = BombermanGame.players.get(0);
+    Player p2 = BombermanGame.players.get(1);
+    
+        
+    
+
+
+   
     Tile tile = tiles[newX][newY];
     if (tile instanceof Wall) {
         return false; // Stop explosion at a wall
     }
-    // Apply visual effect to explodable objects and continue explosion path
-    if (!(tile instanceof Wall)) { // Assuming Wall is not explodable
-        JButton button = buttons[newX][newY];
+   JButton button = buttons[newX][newY];
+    button.setBackground(Color.ORANGE);
+    affectedButtons.add(button);
+    if (tile instanceof Box ) {
+        // Replace the tile with an empty field
+        Box t = (Box) tile;
         button.setBackground(Color.ORANGE);
-        affectedButtons.add(button);
-        if (tile instanceof Box) {
-            return false; // Stop explosion at the first box
-        }
+        
+        Timer timer = new Timer(400, e -> {
+            
+            t.explode(buttons,tiles);
+
+            printTilesState(tiles);
+          //  tiles[newX][newY] = new Field(newX, newY);
+       // button.setBackground(Color.GRAY); 
+         
+    });
+        timer.setRepeats(false); 
+timer.start();
+
+         return false;
+
+        // Change color to represent an empty field
+        // Stop explosion here
     }
-    return true; // Continue explosion in this direction
+     if (p.currentRow == newX && p.currentCol == newY) {
+        p.die(); // Affect the player if they are within the explosion's range
+    } 
+     if (p2.currentRow == newX && p2.currentCol == newY) {
+        p2.die(); // Affect the player if they are within the explosion's range
+    }
+    return true; // Continue explosion in this direction if it's an empty field
+}
+public void printTilesState(Tile[][] tiles) {
+    for (int i = 0; i < tiles.length; i++) {
+        for (int j = 0; j < tiles[i].length; j++) {
+            System.out.print(tiles[i][j] instanceof Field ? "F" : "B");
+            System.out.print(" ");
+        }
+        System.out.println(); // Move to the next line after printing each row
+    }
+    System.out.println("=================================");
 }
     
 

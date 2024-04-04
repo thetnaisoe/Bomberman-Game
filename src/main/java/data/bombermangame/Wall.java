@@ -24,5 +24,10 @@ public class Wall extends Tile {
         return false;
     }
     
+    @Override
+    public boolean isPassable(){
+        return false;
+    }
+    
     
 }

@@ -42,5 +42,8 @@ public abstract class Tile {
          
          
      }
+      public boolean isPassable() {
+        return true;
+    }
     
 }

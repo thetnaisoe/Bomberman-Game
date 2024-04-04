@@ -10,15 +10,17 @@ import java.util.*;
 import data.bombermangame.Monster;
 import data.bombermangame.Player;
 
-public class BombermanGame extends JFrame {
+public class BombermanGame extends JFrame implements PlayerEventListener {
     private static final int ROWS = 15; // Number of rows in the table
     private static final int COLS = 15; // Number of columns in the table
     private JButton[][] buttons; // Array to hold game buttons
     private Tile[][] tiles;
     
-    private ArrayList<Player> players = new ArrayList<>();
+    public static ArrayList<Player> players = new ArrayList<>();
     private ArrayList<Monster> monsters = new ArrayList<>();
     private HashMap<Player, HashSet<Integer>> playerKeyMap = new HashMap<>();
+    
+  
 
     public BombermanGame() {
         setTitle("Bomberman Game");
@@ -26,16 +28,42 @@ public class BombermanGame extends JFrame {
         setLayout(new BorderLayout()); // Set layout to BorderLayout
         
 
-        // Create main game panel
-        JPanel mainPanel = new JPanel(new GridLayout(15, 15));
-        mainPanel.setFocusable(true);
-        mainPanel.requestFocusInWindow();
+       
         buttons = new JButton[ROWS][COLS]; // Initialize the buttons array
          tiles = new Tile[ROWS][COLS];
+         setupGameUI();
   
 
         // Add buttons to the main panel
-        try {
+        
+    }
+    public void resetGame() {
+       
+    getContentPane().removeAll(); // Remove all UI components from the JFrame
+
+    // Reinitialize game state variables if necessary
+    buttons = new JButton[ROWS][COLS];
+    tiles = new Tile[ROWS][COLS];
+    players.clear();
+    monsters.clear();
+    playerKeyMap.clear();
+
+    // Re-setup the game UI and state
+    setupGameUI(); // You'll need to implement this based on your constructor logic
+
+    // Revalidate and repaint to reflect changes
+    revalidate();
+    repaint();
+}
+    private void setupGameUI() {
+    // Move your current constructor logic here to setup the game
+    // This includes creating panels, setting up the game board, adding players, etc.
+    // Essentially, refactor your constructor to call this method after initial setup
+     // Create main game panel
+        JPanel mainPanel = new JPanel(new GridLayout(15, 15));
+        mainPanel.setFocusable(true);
+        mainPanel.requestFocusInWindow();
+    try {
             Scanner scanner = new Scanner(new BufferedReader(new FileReader("MapONE.txt")));
             for (int i = 0; i < ROWS; i++) {
                 String line = scanner.nextLine();
@@ -55,7 +83,7 @@ public class BombermanGame extends JFrame {
 
                     } else if(symbol=='B'){
                         button.setBackground(Color.GREEN);
-                         tile = new Box(i,j);
+                         tile = new Box(i,j,tiles);
                         
 
                     }
@@ -81,9 +109,9 @@ public class BombermanGame extends JFrame {
         gameElementsPanel.setPreferredSize(new Dimension(200, 100)); // Set size as needed
         gameElementsPanel.setBackground(Color.GREEN); // Set background color
         add(gameElementsPanel, BorderLayout.NORTH); // Add game elements panel to the top
+        players.add(new Player("Abdelhamid",buttons,tiles, 1, 1,this));  
 
-        players.add(new Player(buttons,tiles, 1, 1));  
-        players.add(new Player(buttons,tiles, 12, 12)); // Example positions
+        players.add(new Player("Thet",buttons,tiles, 12, 12,this)); // Example positions
         monsters.add(new Monster(buttons, 5,5));
         monsters.add(new Monster(buttons, 8,8));
         monsters.add(new Monster(buttons, 6,6));
@@ -92,7 +120,7 @@ public class BombermanGame extends JFrame {
 
         pack(); // Pack components tightly
         setLocationRelativeTo(null); // Center the frame
-    }
+}
     
     public void setupKeyListeners(JPanel mainPanel) {
         // Example key assignments
@@ -106,6 +134,11 @@ public class BombermanGame extends JFrame {
         }
     }
     
+        @Override
+    public void onPlayerDeath(Player player) {
+        // Logic to reset the game
+        resetGame();
+    }
     private void addPlayerKeys(Player player, int upKey, int downKey, int leftKey, int rightKey,int dropKey) {
         HashSet<Integer> keySet = new HashSet<>();
         keySet.add(upKey);
@@ -115,8 +148,10 @@ public class BombermanGame extends JFrame {
         keySet.add(dropKey);
         playerKeyMap.put(player, keySet);
     }
+
     
     private KeyAdapter createKeyListenerForPlayer(Player player) {
+        //player.updateMap();
         return new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

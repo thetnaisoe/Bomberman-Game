@@ -29,6 +29,8 @@ public class Bomb extends Tile implements Explodable{
         this.range=range;
         this.tiles=tiles;
         this.explosion = new Explosion(row, col, 10, range);
+        
+        tiles[row][col] = this;
         this.timer = new Timer(3000, e -> detonate(buttons)); // Assuming a 3-second fuse
         this.timer.setRepeats(false); // The timer should only go off once
         this.timer.start();
@@ -46,6 +48,8 @@ public class Bomb extends Tile implements Explodable{
     public void setDestroyed(boolean dest){
          if (dest && !this.destroyed) { // Additional check to prevent re-entry
         this.destroyed = true;
+        
+        
         // Stop the timer to prevent multiple detonations
         if (this.timer != null) {
             this.timer.stop();
@@ -68,6 +72,8 @@ public class Bomb extends Tile implements Explodable{
      private void detonate(JButton[][] buttons) {
         if (tiles != null) {
         this.explosion.detonate(buttons, tiles); // Pass tiles to detonate method
+         tiles[rowIndex][colIndex] = new Field(rowIndex, colIndex); // Assuming Field represents a passable tile
+        buttons[rowIndex][colIndex].setBackground(Color.GRAY);
     } else {
         System.out.println("Tiles array is unexpectedly null.");
     } // Delegate detonation to the Explosion class
@@ -75,12 +81,16 @@ public class Bomb extends Tile implements Explodable{
     }
 
     @Override
-    public void explode() {
+    public void explode(JButton[][] buttons,Tile[][] tiles) {
         // Logic to explode the new bomb.
        
         
         this.setDestroyed(true); 
-         detonate(this.player.buttons);
+      //   detonate(this.player.buttons);
+    }
+     @Override
+    public boolean isPassable(){
+        return false;
     }
         
     

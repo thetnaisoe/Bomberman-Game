@@ -4,12 +4,11 @@
  */
 package data.bombermangame;
 
-import javax.swing.JButton;
-
 /**
  *
  * @author lenovo
  */
-public interface Explodable {
-    void explode(JButton[][] buttons,Tile[][] tiles);
+public interface PlayerEventListener {
+     void onPlayerDeath(Player player);
+    
 }
