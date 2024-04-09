@@ -4,15 +4,12 @@
  */
 package data.bombermangame;
 
-/**
- *
- * @author lenovo
- */
 public abstract class Tile {
     protected int rowIndex;
     protected int colIndex;
     protected boolean canDrop;
     protected boolean destroyed;
+    protected TileType tileType;
     
     public Tile(int row,int col){
         this.rowIndex=row;
@@ -42,8 +39,12 @@ public abstract class Tile {
          
          
      }
-      public boolean isPassable() {
-        return true;
+    public boolean isPassable() {
+        switch(tileType) {
+            case WALL: return false;
+            case BOX: return false;
+            default: return true; // Example: Field is passable
+        }
     }
     
 }

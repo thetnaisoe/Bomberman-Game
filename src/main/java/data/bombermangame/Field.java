@@ -12,6 +12,7 @@ public class Field extends Tile{
     
     public Field(int row, int col) {
         super(row, col);
+        tileType = TileType.FIELD;
         
     }
     

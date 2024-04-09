@@ -12,6 +12,7 @@ public class Wall extends Tile {
     
     public Wall(int row, int col) {
         super(row, col);
+        tileType = TileType.WALL;
     }
     
     @Override 
