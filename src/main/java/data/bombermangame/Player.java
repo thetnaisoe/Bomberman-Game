@@ -1,132 +1,87 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package data.bombermangame;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import data.bombermangame.Monster;
-
-public class Player implements Explodable {
-    public  JButton[][] buttons; // Reference to the game buttons grid
-    public  Tile[][] tiles;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
+import java.awt.Image; 
+/**
+ *
+ * @author ThetNaingSoe
+ */
+public class Player {
     public String name;
-    public int currentRow; // Current row position of the player
-    public int currentCol; // Current column position of the player
-    public boolean active;
-    public ArrayList<Monster> monsters = new ArrayList<>();
+    public int currentRow;
+    public int currentCol;
     public boolean isAlive = true;
-    private PlayerEventListener eventListener;
-     
-    
-    public Player(String name,JButton[][] butto,Tile[][] til, int initialRow, int initialCol,PlayerEventListener listener) {
-        this.buttons = butto;
+    private BombermanComponent bombermanComponent; 
+    private Image playerImage;
+    private static final int SQUARE_SIZE = 50;
+
+    // Constructor
+    public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, String imagePath ) {
         this.name = name;
-        this.tiles=til;
         this.currentRow = initialRow;
         this.currentCol = initialCol;
-        this.active = true;
-        this.eventListener = listener;
-
-        highlightCurrentPosition();
-    }
-    public  void updateMap(JButton[][] bts,Tile[][] tls){
-        this.buttons =bts;
-        this.tiles=tls;
+        this.bombermanComponent = bombermanComponent;
+        try {
+            Image loadedImage = ImageIO.read(new File(imagePath));
+            // Resize the image
+            this.playerImage = loadedImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
-    public void die(){
-        isAlive=false;
-            buttons[currentRow][currentCol].setBackground(Color.RED);
-            if (eventListener != null) {
-            eventListener.onPlayerDeath(this); // Notify the listener
-        }
-           
-            if (BombermanGame.players.get(0).name == this.name){
-                JOptionPane.showMessageDialog(null,name + " have died!" + BombermanGame.players.get(1).name +" has won the game!!!", "Game Over", JOptionPane.WARNING_MESSAGE);
-                
-            }
-            else{
-                 JOptionPane.showMessageDialog(null,name + " has died! " + BombermanGame.players.get(0).name +" has won the game!!!", "Game Over", JOptionPane.WARNING_MESSAGE);
-                
-            }
-
-
-                
-        
-        
-    }
-
-    public void moveUp() {
+    public void moveUp(Tile[][] tiles) {
+        System.out.println( ": Attempting to move up");
         if (!isAlive) return;
-        if (currentRow > 0  && tiles[currentRow - 1][currentCol].isPassable()) {
-            clearCurrentPosition();
-            currentRow--;
-            highlightCurrentPosition();
+        int targetRow = currentRow - 1;
+        if (targetRow >= 0 && tiles[targetRow][currentCol].isPassable()) {
+            currentRow = targetRow; 
+            requestRepaint();
         }
-
 
     }
 
-    public void moveDown() {
+    public void moveDown(Tile[][] tiles) {
+        System.out.println( ": Attempting to move up");
         if (!isAlive) return;
-        if (currentRow < buttons.length - 1  && tiles[currentRow +1][currentCol ].isPassable()) {
-            clearCurrentPosition();
-            currentRow++;
-            highlightCurrentPosition();
+        int targetRow = currentRow + 1;
+        if (targetRow < tiles.length && tiles[targetRow][currentCol].isPassable()) {
+            currentRow = targetRow; 
+            requestRepaint(); 
         }
 
     }
 
-    public void moveLeft() {
+    public void moveLeft(Tile[][] tiles) {
         if (!isAlive) return;
-        if (currentCol > 0  && tiles[currentRow ][currentCol -1].isPassable()) {
-            clearCurrentPosition();
-            currentCol--;
-            highlightCurrentPosition();
+        int targetCol = currentCol - 1;
+        if (targetCol >= 0 && tiles[currentRow][targetCol].isPassable()) {
+            currentCol = targetCol;
+            requestRepaint(); 
         }
+ 
+    }
 
-    }
-        public void moveRight() {
-            if (!isAlive) return;
-        if (currentCol < buttons[0].length - 1  && tiles[currentRow ][currentCol +1].isPassable()) {
-            clearCurrentPosition();
-            currentCol++;
-            highlightCurrentPosition();
-        }
-    }
-    public void dropBomb() {
+    public void moveRight(Tile[][] tiles) {
         if (!isAlive) return;
-    // Check if a bomb can be placed at the current position (no bomb already present, etc.)
-     if (buttons[currentRow][currentCol].getBackground() != Color.PINK) {
-        // Display the bomb
-        buttons[currentRow][currentCol].setBackground(Color.PINK); 
-    
-    new Bomb(buttons,tiles,currentRow, currentCol, this, 2); // Assuming a default range of 2
-    //highlightBombPosition(currentRow,currentCol);
-     }
-    
-}
-private void highlightBombPosition (int row,int col){
-    buttons[row][col].setBackground(Color.PINK);
-}
+        int targetCol = currentCol + 1;
+        if (targetCol < tiles[0].length && tiles[currentRow][targetCol].isPassable()) {
+            currentCol = targetCol;
+            requestRepaint(); 
+        }
 
-
-
-
-    private void highlightCurrentPosition() {
-        buttons[currentRow][currentCol].setBackground(Color.BLUE);
-    }
-
-    private void clearCurrentPosition() {
-        buttons[currentRow][currentCol].setBackground(Color.GRAY);
-    }
-
-    @Override
-    public void explode(JButton[][] buttons, Tile[][] tiles) {
-        this.die();
     }
     
+    private void requestRepaint() {
+        bombermanComponent.repaint();
+    }
 
-    
-    
+    public Image getPlayerImage() {
+        return playerImage;
+    }
 }
