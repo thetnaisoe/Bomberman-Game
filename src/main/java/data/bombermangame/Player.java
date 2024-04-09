@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
+import java.util.ArrayList;
+
 /**
  *
  * @author ThetNaingSoe
@@ -34,6 +36,7 @@ public class Player {
             e.printStackTrace();
         }
     }
+    
     
     public void moveUp(Tile[][] tiles) {
         System.out.println( ": Attempting to move up");
@@ -76,6 +79,17 @@ public class Player {
         }
 
     }
+    
+    public void dropBomb(Tile[][] tiles, ArrayList<Bomb> bombs) {
+        if (!isAlive) return; // Check if the player is alive
+
+        Bomb bomb = new Bomb(currentRow, currentCol);
+        bombs.add(bomb); // Add the bomb to the list of bombs
+
+        requestRepaint();
+    }
+
+
     
     private void requestRepaint() {
         bombermanComponent.repaint();

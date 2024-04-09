@@ -71,12 +71,12 @@ public class BombermanFrame extends JFrame{
         // Load Map 
         Tile[][] tiles = bombermanComponent.loadMapFromFile("MapONE.txt"); 
 
-        players.add(new Player("Abdelhamid", 3, 3, bombermanComponent, "player.png")); 
-        players.add(new Player("Thet", 11,11, bombermanComponent, "player.png"));
+        players.add(new Player("Abdelhamid", 3, 3, bombermanComponent, "assets/players/bombermanfrontgreen.png")); 
+        players.add(new Player("Thet", 11,11, bombermanComponent, "assets/players/bombermanfrontgreen.png"));
 
-        monsters.add(new Monster(tiles, 9, 9, players, "monster.png")); 
+        monsters.add(new Monster(tiles, 9, 9, players, "assets/monsters/ghostfrontgreen.png")); 
         System.out.println("Monster created!");
-        monsters.add(new Monster(tiles, 5, 5, players, "monster.png"));
+        monsters.add(new Monster(tiles, 5, 5, players, "assets/monsters/ghostfrontgreen.png"));
         System.out.println("Monster created!");
         System.out.println("Number of Monsters: " + monsters.size());
 

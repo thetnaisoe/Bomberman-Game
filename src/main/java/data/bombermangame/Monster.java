@@ -29,13 +29,16 @@ public class Monster {
     private static final int SQUARE_SIZE = 50;
     private Tile[][] tiles;
     private ArrayList<Player> players;
-    
+    public boolean isAlive;
+
+   
     public Monster(Tile[][] tiles, int initialRow, int initialCol, ArrayList<Player> players, String imagePath) {
         // Store references
         this.tiles = tiles;
         this.currentRow = initialRow;
         this.currentCol = initialCol;
         this.players = players;
+        isAlive = true;
         
         // Load the monster image
         try {

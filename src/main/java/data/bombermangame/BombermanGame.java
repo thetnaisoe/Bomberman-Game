@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 /**
  *
- * @author ThetNaingSoe
+ * @author ThetNaingSoe!
  */
 public final class BombermanGame
 {
