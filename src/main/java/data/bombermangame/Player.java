@@ -8,7 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
 import java.util.ArrayList;
-
+import java.util.Timer;
+import java.util.TimerTask;
 /**
  *
  * @author ThetNaingSoe
@@ -39,7 +40,6 @@ public class Player {
     
     
     public void moveUp(Tile[][] tiles) {
-        System.out.println( ": Attempting to move up");
         if (!isAlive) return;
         int targetRow = currentRow - 1;
         if (targetRow >= 0 && tiles[targetRow][currentCol].isPassable()) {
@@ -50,7 +50,6 @@ public class Player {
     }
 
     public void moveDown(Tile[][] tiles) {
-        System.out.println( ": Attempting to move up");
         if (!isAlive) return;
         int targetRow = currentRow + 1;
         if (targetRow < tiles.length && tiles[targetRow][currentCol].isPassable()) {
@@ -86,6 +85,17 @@ public class Player {
         Bomb bomb = new Bomb(currentRow, currentCol);
         bombs.add(bomb); // Add the bomb to the list of bombs
 
+        requestRepaint();
+
+        // Schedule the bomb to detonate after 2 seconds
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                bomb.detonate(tiles);
+                timer.cancel(); // Stop the timer after detonation
+            }
+        }, 2000); // 2000 milliseconds = 2 seconds
         requestRepaint();
     }
 

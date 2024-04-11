@@ -4,12 +4,15 @@
  */
 package data.bombermangame;
 
+import java.awt.Image;
+
 public abstract class Tile {
     protected int rowIndex;
     protected int colIndex;
     protected boolean canDrop;
     protected boolean destroyed;
     protected TileType tileType;
+    private Image image;
     
     public Tile(int row,int col){
         this.rowIndex=row;
@@ -17,6 +20,15 @@ public abstract class Tile {
         this.canDrop=false;
         this.destroyed=false;
     }
+    
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+    
     public boolean canDrop(){
         return canDrop;
     }

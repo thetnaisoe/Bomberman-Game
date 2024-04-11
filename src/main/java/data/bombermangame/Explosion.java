@@ -5,43 +5,14 @@ import java.util.ArrayList;
 
 public class Explosion {
    
-    private int rowIndex;
-    private int colIndex;
-    private int blastRange;
+    public int rowIndex;
+    public int colIndex;
+    public int blastRange;
 
     public Explosion(int rowIndex, int colIndex, int blastRange) {
         this.rowIndex = rowIndex;
         this.colIndex = colIndex;
         this.blastRange = blastRange;
-    }
- 
-    public List<Explodable> getObjectsInRange(Tile[][] tiles) {
-        List<Explodable> objectsInRange = new ArrayList<>();
-
-        for (int step = 1; step <= blastRange; step++) {
-            int newX = rowIndex;
-            int newY = colIndex + step;
-            if (!isValidAndExplodable(newX, newY, tiles, objectsInRange)) break;
-        }
-
-        for (int step = 1; step <= blastRange; step++) {
-            int newX = rowIndex;
-            int newY = colIndex - step;
-            if (!isValidAndExplodable(newX, newY, tiles, objectsInRange)) break;
-        }
-
-        for (int step = 1; step <= blastRange; step++) {
-            int newX = rowIndex + step;
-            int newY = colIndex;
-            if (!isValidAndExplodable(newX, newY, tiles, objectsInRange)) break;
-        }
-
-        for (int step = 1; step <= blastRange; step++) {
-            int newX = rowIndex - step;
-            int newY = colIndex;
-            if (!isValidAndExplodable(newX, newY, tiles, objectsInRange)) break;
-        }
-        return objectsInRange;
     }
      
     public int getBlastRadius() {
@@ -72,16 +43,14 @@ public class Explosion {
         }
 
         Tile tile = tiles[newX][newY];
-        if (tile instanceof Wall) {
+        if (tile instanceof Wall || tile instanceof Box) {
+            // Destroy the box if it's a Box tile
+            if (tile instanceof Box box) {
+                box.destroyed = true;
+            }
             return;
         }
 
-        //if (tile instanceof Box) {
-        //    Box box = (Box) tile;
-        //    box.explode(tiles);
-        //}
-        
-        // Assuming there are players and monsters in the game, handle their interaction with explosion
         for (Player player : BombermanComponent.players) {
             if (player.currentRow == newX && player.currentCol == newY) {
                 player.isAlive = false;
@@ -92,19 +61,5 @@ public class Explosion {
                 monster.isAlive = false;
             }
         }
-    }
-
-    private boolean isValidAndExplodable(int newX, int newY, Tile[][] tiles, List<Explodable> objectsInRange) {
-        if (newX < 0 || newX >= tiles.length || newY < 0 || newY >= tiles[0].length) {
-            return false;
-        }
-        Tile tile = tiles[newX][newY];
-        if (tile instanceof Wall) {
-            return false;
-        } else if (tile instanceof Explodable) {
-            objectsInRange.add((Explodable) tile);
-            return !(tile instanceof Box);
-        }
-        return true;
     }
 }

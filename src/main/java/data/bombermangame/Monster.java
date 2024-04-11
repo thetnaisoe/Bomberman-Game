@@ -3,15 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package data.bombermangame;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.*;
-import java.io.*;
-import java.util.List; // Import only List from java.util
 import java.util.ArrayList;
-import javax.swing.Timer;  
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +17,6 @@ public class Monster {
 
     public int currentRow;
     public int currentCol;
-    private BombermanComponent bombermanComponent; 
     public Image monsterImage;
     private static final int SQUARE_SIZE = 50;
     private Tile[][] tiles;
@@ -48,8 +40,6 @@ public class Monster {
             System.err.println("Error loading monster image: " + imagePath); // More prominent error
             e.printStackTrace();
         }
-
- 
     }
     
     public Image getMonsterImage() {
@@ -67,27 +57,15 @@ public class Monster {
         switch (direction) {
             case 0: // Move up
                 newRow = Math.max(0, currentRow - 1);
-                System.out.println("Current position: " + currentRow + ", " + currentCol);
-                System.out.println("New position: " + newRow + ", " + newCol);
-                System.out.println("Passable: " + tiles[newRow][newCol].isPassable()); 
                 break;
             case 1: // Move down
-                newRow = Math.min(tiles.length - 1, currentRow + 1);
-                System.out.println("Current position: " + currentRow + ", " + currentCol);
-                System.out.println("New position: " + newRow + ", " + newCol);
-                System.out.println("Passable: " + tiles[newRow][newCol].isPassable());                 
+                newRow = Math.min(tiles.length - 1, currentRow + 1);     
                 break;
             case 2: // Move left
-                newCol = Math.max(0, currentCol - 1);
-                System.out.println("Current position: " + currentRow + ", " + currentCol);
-                System.out.println("New position: " + newRow + ", " + newCol);
-                System.out.println("Passable: " + tiles[newRow][newCol].isPassable());                
+                newCol = Math.max(0, currentCol - 1);       
                 break;
             case 3: // Move right
-                newCol = Math.min(tiles[0].length - 1, currentCol + 1);
-                System.out.println("Current position: " + currentRow + ", " + currentCol);
-                System.out.println("New position: " + newRow + ", " + newCol);
-                System.out.println("Passable: " + tiles[newRow][newCol].isPassable());                 
+                newCol = Math.min(tiles[0].length - 1, currentCol + 1);           
                 break;
         }
 
@@ -114,9 +92,4 @@ public class Monster {
             //endGame(); 
         }
     }
-    
-    
-
-
-           
 }
