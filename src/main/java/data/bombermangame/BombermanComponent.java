@@ -16,25 +16,30 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  *
  * @author ThetNaingSoe
  */
 public class BombermanComponent extends JComponent {
+    private static final int EXPLOSION_DURATION = 1000; // 1 second
 
     private static final int SQUARE_SIZE = 50; // Example size for rendering
-    private Tile[][] tiles; 
+    public static Tile[][] tiles; 
     private Player player;
     public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Monster> monsters = new ArrayList<>();
     public Monster monster;
     private HashMap<Player, HashSet<Integer>> playerKeyMap = new HashMap<>();
-    private ArrayList<Bomb> bombs = new ArrayList<>();
+    public static ArrayList<Bomb> bombs = new ArrayList<>();
     private Image fieldImage;
     private Image wallImage;
     private Image boxImage;
     private Image bombImage;
-
+    private Image explosionImage;
+    
     public BombermanComponent() {
         try {
             fieldImage = ImageIO.read(new File("assets/fields/field.png")); // Replace with your image path 
@@ -59,6 +64,12 @@ public class BombermanComponent extends JComponent {
         try {
             bombImage = ImageIO.read(new File("assets/explosion/bombgreen.png")); // Replace with your image path 
             bombImage = bombImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            explosionImage = ImageIO.read(new File("assets/explosion/blastcenter.png")); // Replace with your image path 
+            explosionImage = explosionImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,7 +127,6 @@ public class BombermanComponent extends JComponent {
     // Create key listeners
     for (Player player : players) {
         component.addKeyListener(createKeyListenerForPlayer(player));
-        System.out.println("Key Listener added for player");
     }
 }
 
@@ -191,9 +201,6 @@ public class BombermanComponent extends JComponent {
         };
     }
 
-
-
-    
     @Override
     public Dimension getPreferredSize() {
         int mapWidth = tiles[0].length * SQUARE_SIZE;  // Calculate based on your tiles
@@ -204,7 +211,6 @@ public class BombermanComponent extends JComponent {
    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("Monsters in paintComponent: " + monsters.size()); // Add this line 
         for (int row = 0; row < tiles.length; row++) {
             for (int col = 0; col < tiles[0].length; col++) {
                 Tile tile = tiles[row][col];
@@ -214,10 +220,13 @@ public class BombermanComponent extends JComponent {
 
                     if (tile instanceof Wall) {
                         g.drawImage(wallImage, x, y, null); 
+                        tile.setImage(wallImage);
                     } else if (tile instanceof Box) {
                         g.drawImage(boxImage, x, y, null); 
-                    } else { // Likely Field 
+                        tile.setImage(boxImage);
+                    } else if (tile instanceof Field) {
                         g.drawImage(fieldImage, x, y, null); 
+                        tile.setImage(fieldImage);
                     }
 
                 }
@@ -236,23 +245,64 @@ public class BombermanComponent extends JComponent {
         }
         
         for (Monster monster : monsters) { 
-            if (monster != null) { 
-                System.out.println("Drawing monster at: " + monster.currentCol * SQUARE_SIZE + ", " + monster.currentRow * SQUARE_SIZE);
-                System.out.println(monster.monsterImage); // Debugging line 
+            if (monster.isAlive) { 
                 int monsterX = monster.currentCol * SQUARE_SIZE;
                 int monsterY = monster.currentRow * SQUARE_SIZE;
                 g.drawImage(monster.monsterImage, monsterX, monsterY, null); 
             }
         } 
-        
         for (Bomb bomb : bombs) {
             if (!bomb.isExploded()) {
                 int bombX = bomb.getCol() * SQUARE_SIZE;
                 int bombY = bomb.getRow() * SQUARE_SIZE;
-                // Draw bomb at (bombX, bombY) position
-                // You can use a different image to represent the bomb
                 g.drawImage(bombImage, bombX, bombY, null);
             }
         }
+        for (Bomb bomb : bombs) {
+            if (bomb.isExploded()) {
+                int bombX = bomb.getCol() * SQUARE_SIZE;
+                int bombY = bomb.getRow() * SQUARE_SIZE;
+
+                // Draw explosions in all four directions
+                drawExplosion(g, bombX, bombY, 1, 0); // Right
+                drawExplosion(g, bombX, bombY, -1, 0); // Left
+                drawExplosion(g, bombX, bombY, 0, 1); // Down
+                drawExplosion(g, bombX, bombY, 0, -1); // Up
+            }   
+        }
+        
+    }
+    private void drawExplosion(Graphics g, int x, int y, int dx, int dy) {
+        g.drawImage(explosionImage, x, y, this);
+
+        // Draw explosion images until hitting a wall or reaching the blast range
+        for (int i = 1; i <= 3; i++) {
+            x += dx * SQUARE_SIZE;
+            y += dy * SQUARE_SIZE;
+
+            // Check if the new coordinates are within the bounds of the tiles array
+            if (x < 0 || x >= tiles[0].length * SQUARE_SIZE || y < 0 || y >= tiles.length * SQUARE_SIZE) {
+                break; 
+            }
+
+            // Check if the explosion hits a wall
+            if (tiles[y / SQUARE_SIZE][x / SQUARE_SIZE] instanceof Wall) {
+                break; 
+            }
+            if (tiles[y / SQUARE_SIZE][x / SQUARE_SIZE] instanceof Box) {
+                g.drawImage(explosionImage, x, y, this);
+                tiles[y / SQUARE_SIZE][x / SQUARE_SIZE] = new Field(y/SQUARE_SIZE, x/SQUARE_SIZE);
+                // Wait for 1 second before drawing the field image
+                // Destroy the box
+                break; 
+            }
+
+            // Draw explosion image
+            g.drawImage(explosionImage, x, y, this);
+            tiles[y / SQUARE_SIZE][x / SQUARE_SIZE].setImage(explosionImage);
+            // Wait for 1 second before drawing the field image
+        }
     }
 }
+
+

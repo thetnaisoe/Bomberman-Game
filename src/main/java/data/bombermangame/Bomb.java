@@ -3,14 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package data.bombermangame;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import javax.swing.Timer;
-
-
-
 /**
  *
  * @author aryan
@@ -19,7 +11,7 @@ public class Bomb {
     private int row; // Row position of the bomb
     private int col; // Column position of the bomb
     private boolean exploded; // Indicates if the bomb has exploded
-    private int explosionRadius; // Radius of the bomb's explosion (optional)
+    public int explosionRadius; // Radius of the bomb's explosion (optional)
 
     public Bomb(int row, int col) {
         this.row = row;
@@ -56,35 +48,15 @@ public class Bomb {
     }
 
     // Method to detonate the bomb
-    public void detonate(Tile[][] tiles, ArrayList<Player> players, ArrayList<Monster> monsters) {
-        // Implement detonation logic here
-        // Mark the bomb as exploded
+    public void detonate(Tile[][] tiles) {
+        // Detonate the bomb
         exploded = true;
-        
-        // Check for player casualties
-        for (Player player : players) {
-            if (player.currentRow == row && player.currentCol == col) {
-                player.isAlive = false;
-            }
-        }
-        
-        // Check for monster casualties
-        for (Monster monster : monsters) {
-            if (monster.currentRow == row && monster.currentCol == col) {
-                monster.isAlive = false;
-            }
-        }
-
-        for (Monster monster : monsters) {
-            if (monster.currentRow == row && monster.currentCol == col) {
-                monster.isAlive = false;
-            }
-        }
-
-        // You may add further logic such as affecting nearby tiles or entities when the bomb explodes
+        System.out.println("booom");
+        // Create explosions and apply effects
+        Explosion explosion = new Explosion(this.row, this.col, explosionRadius);
+        explosion.detonate(tiles);
     }
-
-    // Optional method to get the explosion radius
+    
     public int getExplosionRadius() {
         return explosionRadius;
     }
