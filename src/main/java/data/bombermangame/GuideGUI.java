@@ -66,7 +66,7 @@ public class GuideGUI extends JFrame {
         dispose(); // Close the GuideGUI
         // Open the BombermanGame JFrame
         EventQueue.invokeLater(() -> {
-            BombermanGame game = new BombermanGame();
+            BombermanFrame game = new BombermanFrame();
             game.setVisible(true);
         });
     }
