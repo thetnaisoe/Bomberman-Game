@@ -27,6 +27,10 @@ public class Field extends Tile{
         return false;
         
     }
+    @Override
+    public boolean isPassable(){
+        return true;
+    }
     
 }
 

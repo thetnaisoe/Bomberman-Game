@@ -10,7 +10,7 @@ import java.util.List;
 public class NamePlayersGUI extends JFrame {
     private List<JTextField> nameFields;
     private JButton submitButton;
-    private int numberOfPlayers;
+    private final int numberOfPlayers;
 
     public NamePlayersGUI(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;

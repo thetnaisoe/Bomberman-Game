@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package data.bombermangame;
+import java.util.Timer;
+import java.util.TimerTask;
 /**
  *
  * @author aryan
@@ -49,12 +51,19 @@ public class Bomb {
 
     // Method to detonate the bomb
     public void detonate(Tile[][] tiles) {
-        // Detonate the bomb
-        exploded = true;
-        System.out.println("booom");
-        // Create explosions and apply effects
-        Explosion explosion = new Explosion(this.row, this.col, explosionRadius);
-        explosion.detonate(tiles);
+        // Detonate the bomb after a 2-second delay
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // Detonate the bomb
+                exploded = true;
+                System.out.println("booom");
+                // Create explosions and apply effects
+                Explosion explosion = new Explosion(row, col, explosionRadius);
+                explosion.detonate(tiles);
+            }
+        }, 2000); // 2000 milliseconds = 2 seconds
     }
     
     public int getExplosionRadius() {

@@ -16,19 +16,15 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  *
  * @author ThetNaingSoe
  */
 public class BombermanComponent extends JComponent {
-    private static final int EXPLOSION_DURATION = 1000; // 1 second
 
     private static final int SQUARE_SIZE = 50; // Example size for rendering
     public static Tile[][] tiles; 
-    private Player player;
     public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Monster> monsters = new ArrayList<>();
     public Monster monster;
@@ -113,11 +109,14 @@ public class BombermanComponent extends JComponent {
     private Tile createTileFromSymbol(char symbol, int row, int col) {
         switch (symbol) {
             case 'W': return new Wall(row, col);
-            case 'B': return new Box(row, col, tiles); 
+            case 'B': 
+                System.out.println("Creating Box at row: " + row + ", col: " + col);
+                return new Box(row, col); 
             case '0': return new Field(row, col);
-            default:  return null; 
+            default: return null; 
         }
     }
+
     
     public void setupKeyListeners(JComponent component) {
     // Example key assignments
@@ -251,58 +250,62 @@ public class BombermanComponent extends JComponent {
                 g.drawImage(monster.monsterImage, monsterX, monsterY, null); 
             }
         } 
-        for (Bomb bomb : bombs) {
+        Iterator<Bomb> iterator = bombs.iterator();
+        while (iterator.hasNext()) {
+            Bomb bomb = iterator.next();
             if (!bomb.isExploded()) {
+                // Draw bomb if it hasn't exploded yet
                 int bombX = bomb.getCol() * SQUARE_SIZE;
                 int bombY = bomb.getRow() * SQUARE_SIZE;
                 g.drawImage(bombImage, bombX, bombY, null);
+            } else {
+                // Draw the explosion
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 1, 0, 3);
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, -1, 0, 3);
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 0, 1, 3);
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 0, -1, 3);
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                iterator.remove();
             }
-        }
-        for (Bomb bomb : bombs) {
-            if (bomb.isExploded()) {
-                int bombX = bomb.getCol() * SQUARE_SIZE;
-                int bombY = bomb.getRow() * SQUARE_SIZE;
-
-                // Draw explosions in all four directions
-                drawExplosion(g, bombX, bombY, 1, 0); // Right
-                drawExplosion(g, bombX, bombY, -1, 0); // Left
-                drawExplosion(g, bombX, bombY, 0, 1); // Down
-                drawExplosion(g, bombX, bombY, 0, -1); // Up
-            }   
-        }
-        
-    }
-    private void drawExplosion(Graphics g, int x, int y, int dx, int dy) {
-        g.drawImage(explosionImage, x, y, this);
-
-        // Draw explosion images until hitting a wall or reaching the blast range
-        for (int i = 1; i <= 3; i++) {
-            x += dx * SQUARE_SIZE;
-            y += dy * SQUARE_SIZE;
-
-            // Check if the new coordinates are within the bounds of the tiles array
-            if (x < 0 || x >= tiles[0].length * SQUARE_SIZE || y < 0 || y >= tiles.length * SQUARE_SIZE) {
-                break; 
-            }
-
-            // Check if the explosion hits a wall
-            if (tiles[y / SQUARE_SIZE][x / SQUARE_SIZE] instanceof Wall) {
-                break; 
-            }
-            if (tiles[y / SQUARE_SIZE][x / SQUARE_SIZE] instanceof Box) {
-                g.drawImage(explosionImage, x, y, this);
-                tiles[y / SQUARE_SIZE][x / SQUARE_SIZE] = new Field(y/SQUARE_SIZE, x/SQUARE_SIZE);
-                // Wait for 1 second before drawing the field image
-                // Destroy the box
-                break; 
-            }
-
-            // Draw explosion image
-            g.drawImage(explosionImage, x, y, this);
-            tiles[y / SQUARE_SIZE][x / SQUARE_SIZE].setImage(explosionImage);
-            // Wait for 1 second before drawing the field image
         }
     }
+    
+    private void drawExplosion(Graphics g, int x, int y, int dx, int dy, int range) {
+        // Draw the central explosion image at the bomb's location
+        g.drawImage(explosionImage, x, y, null);
+
+        // Draw explosions in positive x direction
+        for (int i = 1; i <= range; i++) {
+            int newX = x + i * SQUARE_SIZE * dx;
+            int newY = y + i * SQUARE_SIZE * dy;
+
+            // Convert pixel coordinates to array indices
+            int col = newX / SQUARE_SIZE;
+            int row = newY / SQUARE_SIZE;
+
+            // Debugging: Print the calculated indices and the type of tile at those indices
+            System.out.println("Checking for Box at col: " + col + ", row: " + row);
+            if (isValidPosition(newX, newY)) {
+                System.out.println("Tile type: " + tiles[row][col].getClass().getSimpleName());
+                if (!(tiles[row][col] instanceof Wall)) {
+                    if (tiles[row][col] instanceof Box) {
+                        tiles[row][col] = new Field(row,col);
+                        // Draw explosion on the box itself and stop drawing further
+                        System.out.println("Found a box!");
+                        g.drawImage(explosionImage, newX, newY, null);
+                        break; // Stop drawing further explosions
+                    }
+                    g.drawImage(explosionImage, newX, newY, null);
+                } else {
+                    break; // Stop the explosion if a wall is encountered
+                }
+            }
+        }
+    }
+    
+    private boolean isValidPosition(int x, int y) {
+        return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
+    }
+
 }
-
 
