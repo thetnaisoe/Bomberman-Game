@@ -5,12 +5,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainGUI extends JFrame {
+public class BombermanGame extends JFrame {
     private JButton startButton;
     private JButton quitButton;
     private JLabel backgroundLabel;
 
-    public MainGUI() {
+    public BombermanGame() {
         setTitle("Bomberman Game");
         setSize(1024, 768); // Adjust if needed
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -92,6 +92,6 @@ public class MainGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainGUI().setVisible(true));
+        SwingUtilities.invokeLater(() -> new BombermanGame().setVisible(true));
     }
 }

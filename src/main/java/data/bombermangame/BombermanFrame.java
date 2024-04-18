@@ -99,6 +99,6 @@ public class BombermanFrame extends JFrame{
     }
         
     protected void doUponExit(){
-        this.dispose();
+        System.exit(0);
     }
 }

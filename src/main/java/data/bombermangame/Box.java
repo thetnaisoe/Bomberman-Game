@@ -11,12 +11,9 @@ package data.bombermangame;
 public class Box extends Tile{
      //Tile[][] tiles;
     
-    public Box(int row, int col,Tile[][] tiles) {
+    public Box(int row, int col) {
         super(row, col);
-        this.destroyed=false;
-        //this.tiles = tiles;
         tileType = TileType.BOX;
-        
     }
     
     @Override
@@ -27,5 +24,9 @@ public class Box extends Tile{
     @Override
      public void setDestroyed(boolean destroyed) {
         this.destroyed = destroyed;
+    }
+    @Override
+    public boolean isPassable(){
+        return false;
     }
 }

@@ -1,8 +1,5 @@
 package data.bombermangame;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class Explosion {
    
     public int rowIndex;
@@ -21,34 +18,44 @@ public class Explosion {
      
     public void detonate(Tile[][] tiles) {
         for (int step = 1; step <= blastRange; step++) {
-            applyExplosionEffect(rowIndex, colIndex + step, tiles);
+            if (!applyExplosionEffect(rowIndex, colIndex + step, tiles)) {
+                break; // Stop if we encounter a wall or box
+            }
         }
 
         for (int step = 1; step <= blastRange; step++) {
-            applyExplosionEffect(rowIndex, colIndex - step, tiles);
+            if (!applyExplosionEffect(rowIndex, colIndex - step, tiles)) {
+                break; // Stop if we encounter a wall or box
+            }
         }
 
         for (int step = 1; step <= blastRange; step++) {
-            applyExplosionEffect(rowIndex + step, colIndex, tiles);
+            if (!applyExplosionEffect(rowIndex + step, colIndex, tiles)) {
+                break; // Stop if we encounter a wall or box
+            }
         }
 
         for (int step = 1; step <= blastRange; step++) {
-            applyExplosionEffect(rowIndex - step, colIndex, tiles);
+            if (!applyExplosionEffect(rowIndex - step, colIndex, tiles)) {
+                break; // Stop if we encounter a wall or box
+            }
         }
     }
 
-    private void applyExplosionEffect(int newX, int newY, Tile[][] tiles) {
+    private boolean applyExplosionEffect(int newX, int newY, Tile[][] tiles) {
         if (newX < 0 || newX >= tiles.length || newY < 0 || newY >= tiles[0].length) {
-            return;
+            return false; // Ensure we are within the bounds of the game area
         }
 
         Tile tile = tiles[newX][newY];
-        if (tile instanceof Wall || tile instanceof Box) {
+        if (tile instanceof Wall) {
+            // Stop the explosion if it reaches a wall
+            return false;
+        }
+
+        if (tile instanceof Box) {
             // Destroy the box if it's a Box tile
-            if (tile instanceof Box box) {
-                box.destroyed = true;
-            }
-            return;
+            return false; // Stop the explosion if it reaches a box
         }
 
         for (Player player : BombermanComponent.players) {
@@ -61,5 +68,9 @@ public class Explosion {
                 monster.isAlive = false;
             }
         }
+
+        return true; // Continue the explosion if no obstacles were encountered
     }
+
+
 }

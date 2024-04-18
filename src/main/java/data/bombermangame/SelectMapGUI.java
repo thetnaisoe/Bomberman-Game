@@ -2,7 +2,6 @@ package data.bombermangame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 public class SelectMapGUI extends JFrame {
     private JButton seaButton;
