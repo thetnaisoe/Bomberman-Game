@@ -35,6 +35,9 @@ public class BombermanComponent extends JComponent {
     private Image boxImage;
     private Image bombImage;
     private Image explosionImage;
+    public Image blastRangeImage;
+    public Image detonatorImage;
+    public Image rollerSkateImage;
     
     public BombermanComponent() {
         try {
@@ -66,6 +69,24 @@ public class BombermanComponent extends JComponent {
         try {
             explosionImage = ImageIO.read(new File("assets/explosion/blastcenter.png")); // Replace with your image path 
             explosionImage = explosionImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            blastRangeImage = ImageIO.read(new File("assets/fields/wall.png")); // Replace with your image path 
+            blastRangeImage = blastRangeImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            detonatorImage = ImageIO.read(new File("assets/fields/block.png")); // Replace with your image path 
+            detonatorImage = detonatorImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            rollerSkateImage = ImageIO.read(new File("assets/fields/field.png")); // Replace with your image path 
+            rollerSkateImage = rollerSkateImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,7 +132,9 @@ public class BombermanComponent extends JComponent {
             case 'W': return new Wall(row, col);
             case 'B': 
                 System.out.println("Creating Box at row: " + row + ", col: " + col);
-                return new Box(row, col); 
+                Box box = new Box(row, col);
+            box.maybeDropItem(); // Decide if this box will have an item when destroyed
+            return box; 
             case '0': return new Field(row, col);
             default: return null; 
         }
@@ -206,6 +229,18 @@ public class BombermanComponent extends JComponent {
         int mapHeight = tiles.length * SQUARE_SIZE;
         return new Dimension(mapWidth, mapHeight); 
     }
+    private Image getItemImage(Item item) {
+    // You need to load these images in the constructor or elsewhere
+
+         if (item instanceof RangeIncrease) {
+        return blastRangeImage;
+    } else if (item instanceof Detonator) {
+        return detonatorImage;
+    } else if (item instanceof RollerSkate) {
+        return rollerSkateImage;
+    }
+    return null;
+}
 
    @Override
     protected void paintComponent(Graphics g) {
@@ -221,12 +256,19 @@ public class BombermanComponent extends JComponent {
                         g.drawImage(wallImage, x, y, null); 
                         tile.setImage(wallImage);
                     } else if (tile instanceof Box) {
-                        g.drawImage(boxImage, x, y, null); 
-                        tile.setImage(boxImage);
+                     Item item = ((Box)tile).getItem();
+                    if (item != null) {
+                        Image itemImage = getItemImage(item);
+                        g.drawImage(itemImage, x, y, null); // Draw item image before the box
+                    }
+                    // Draw box image last so it's on top
+                    g.drawImage(boxImage, x, y, null);
+                   
                     } else if (tile instanceof Field) {
                         g.drawImage(fieldImage, x, y, null); 
                         tile.setImage(fieldImage);
                     }
+                
 
                 }
             }
@@ -268,44 +310,115 @@ public class BombermanComponent extends JComponent {
                 iterator.remove();
             }
         }
-    }
+        }
     
+    
+//    private void drawExplosion(Graphics g, int x, int y, int dx, int dy, int range) {
+//        // Draw the central explosion image at the bomb's location
+//        g.drawImage(explosionImage, x, y, null);
+//
+//        // Draw explosions in positive x direction
+//        for (int i = 1; i <= range; i++) {
+//            int newX = x + i * SQUARE_SIZE * dx;
+//            int newY = y + i * SQUARE_SIZE * dy;
+//
+//            // Convert pixel coordinates to array indices
+//            int col = newX / SQUARE_SIZE;
+//            int row = newY / SQUARE_SIZE;
+//
+//            // Debugging: Print the calculated indices and the type of tile at those indices
+//            System.out.println("Checking for Box at col: " + col + ", row: " + row);
+//            if (isValidPosition(newX, newY)) {
+//                System.out.println("Tile type: " + tiles[row][col].getClass().getSimpleName());
+//                if (!(tiles[row][col] instanceof Wall)) {
+//                    if (tiles[row][col] instanceof Box) {
+//                Box box = (Box) tiles[row][col];
+//                Item item = box.getItem();
+//                tiles[row][col] = new Field(row, col);
+//                g.drawImage(fieldImage, newX, newY, null); // Ensure field image is drawn first
+//                if (item != null) {
+//                    Image itemImage = getItemImage(item);
+//                    if (itemImage != null) {
+//                        g.drawImage(itemImage, newX, newY, null); // Draw item image
+//                        System.out.println("Drawing item at " + newX + ", " + newY);
+//                    }
+//                }
+//                g.drawImage(explosionImage, newX, newY, null);
+//                break;
+//                    }
+//                    g.drawImage(explosionImage, newX, newY, null);
+//                } else {
+//                    break; // Stop the explosion if a wall is encountered
+//                }
+//            }
+//        }
+//    }
+//    
     private void drawExplosion(Graphics g, int x, int y, int dx, int dy, int range) {
-        // Draw the central explosion image at the bomb's location
-        g.drawImage(explosionImage, x, y, null);
+    g.drawImage(explosionImage, x, y, null); // Draw the initial explosion at the bomb's location
 
-        // Draw explosions in positive x direction
-        for (int i = 1; i <= range; i++) {
-            int newX = x + i * SQUARE_SIZE * dx;
-            int newY = y + i * SQUARE_SIZE * dy;
-
-            // Convert pixel coordinates to array indices
+    for (int i = 1; i <= range; i++) {
+        int newX = x + i * SQUARE_SIZE * dx;
+        int newY = y + i * SQUARE_SIZE * dy;
+        if (isValidPosition(newX, newY)) {
             int col = newX / SQUARE_SIZE;
             int row = newY / SQUARE_SIZE;
+            Tile tile = tiles[row][col];
 
-            // Debugging: Print the calculated indices and the type of tile at those indices
-            System.out.println("Checking for Box at col: " + col + ", row: " + row);
-            if (isValidPosition(newX, newY)) {
-                System.out.println("Tile type: " + tiles[row][col].getClass().getSimpleName());
-                if (!(tiles[row][col] instanceof Wall)) {
-                    if (tiles[row][col] instanceof Box) {
-                        tiles[row][col] = new Field(row,col);
-                        // Draw explosion on the box itself and stop drawing further
-                        System.out.println("Found a box!");
-                        g.drawImage(explosionImage, newX, newY, null);
-                        break; // Stop drawing further explosions
+            // Ensure only to process if it's a Box
+            if (tile instanceof Box) {
+                Box box = (Box) tile;
+                Item item = box.destroyAndGetItem(); // Get item if any, and signify that the box is destroyed
+                tiles[row][col] = new Field(row, col); // Replace the box with a field regardless of item presence
+
+                g.drawImage(fieldImage, newX, newY, null); // Draw the field image first
+                if (item != null) {
+                    Image itemImage = getItemImage(item);
+                    if (itemImage != null) {
+                        g.drawImage(itemImage, newX, newY, null); // Draw the item image last so it's on top
+                        System.out.println("Drawing item at " + newX + ", " + newY);
                     }
-                    g.drawImage(explosionImage, newX, newY, null);
-                } else {
-                    break; // Stop the explosion if a wall is encountered
                 }
+                g.drawImage(explosionImage, newX, newY, null);
+                break; // Stop further explosion propagation in this direction
+            } else if (!(tile instanceof Wall)) {
+                g.drawImage(explosionImage, newX, newY, null);
+            } else {
+                break; // Stop the explosion at a wall
             }
         }
     }
-    
+}
+
     private boolean isValidPosition(int x, int y) {
         return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
     }
 
 }
+
+//private void drawExplosion(Graphics g, int x, int y, int dx, int dy, int range) {
+//    g.drawImage(explosionImage, x, y, null);  // Draw the central explosion image at the bomb's location
+//
+//    for (int i = 1; i <= range; i++) {
+//        int newX = x + i * SQUARE_SIZE * dx;
+//        int newY = y + i * SQUARE_SIZE * dy;
+//
+//        if (isValidPosition(newX, newY)) {
+//            int col = newX / SQUARE_SIZE;
+//            int row = newY / SQUARE_SIZE;
+//            Tile tile = tiles[row][col];
+//
+//            if (tile instanceof Box) {
+//                Item item = ((Box) tile).destroyAndGetItem();
+//                tiles[row][col] = item != null ? new ItemTile(row, col, item) : new Field(row, col);
+//                g.drawImage(explosionImage, newX, newY, null);
+//                break;  // Stop drawing further explosions if a box is destroyed
+//            } else if (!(tile instanceof Wall)) {
+//                g.drawImage(explosionImage, newX, newY, null);
+//            } else {
+//                break;  // Stop the explosion if a wall is encountered
+//            }
+//        }
+//    }
+//}
 

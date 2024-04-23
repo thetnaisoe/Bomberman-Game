@@ -55,6 +55,7 @@ public class Explosion {
 
         if (tile instanceof Box) {
             // Destroy the box if it's a Box tile
+//            tile.Drop();
             return false; // Stop the explosion if it reaches a box
         }
 
