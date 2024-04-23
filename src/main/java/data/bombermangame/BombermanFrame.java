@@ -42,7 +42,7 @@ public class BombermanFrame extends JFrame{
         int delay = 500; // Update delay in milliseconds (e.g., 100ms for 10 updates per second) 
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                updateGame(); // Call your update logic
+                updateGame(); // Call your update logic aka game loop
             }
         };
         new Timer(delay, taskPerformer).start();
