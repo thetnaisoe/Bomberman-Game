@@ -8,18 +8,24 @@ package data.bombermangame;
  *
  * @author lenovo
  */
-public class PowerUp implements Item {
+public abstract class PowerUp implements Item {
+    
+    protected int duration; // Duration in milliseconds
+
+    public PowerUp(int duration) {
+        this.duration = duration;
+    }
     int time;
 
     @Override
-    public void applyEffect(Player player) {
+    public abstract void applyEffect(Player player) ;
 
-    }
+    
 
     @Override
-    public void removeEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    public abstract void removeEffect(Player player) ;
+       
+    
     
     
 }

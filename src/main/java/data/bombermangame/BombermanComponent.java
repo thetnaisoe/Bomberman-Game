@@ -73,19 +73,19 @@ public class BombermanComponent extends JComponent {
             e.printStackTrace();
         }
         try {
-            blastRangeImage = ImageIO.read(new File("assets/fields/wall.png")); // Replace with your image path 
+            blastRangeImage = ImageIO.read(new File("assets/powerups/RangeP.png")); // Replace with your image path 
             blastRangeImage = blastRangeImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            detonatorImage = ImageIO.read(new File("assets/fields/block.png")); // Replace with your image path 
+            detonatorImage = ImageIO.read(new File("assets/powerups/DetonatorP.png")); // Replace with your image path 
             detonatorImage = detonatorImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            rollerSkateImage = ImageIO.read(new File("assets/fields/field.png")); // Replace with your image path 
+            rollerSkateImage = ImageIO.read(new File("assets/powerups/RollerP.png")); // Replace with your image path 
             rollerSkateImage = rollerSkateImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
@@ -241,6 +241,18 @@ public class BombermanComponent extends JComponent {
     }
     return null;
 }
+    private void checkPowerUpCollision(Player player) {
+    int row = player.currentRow;
+    int col = player.currentCol;
+    Tile tile = tiles[row][col];
+    if (tile instanceof Field) {
+        Item item = ((Field) tile).getItem();
+        if (item instanceof PowerUp) {
+            player.pickUpPowerUp((PowerUp) item);
+            ((Field) tile).setItem(null); // Remove the power-up from the field
+        }
+    }
+    }
 
    @Override
     protected void paintComponent(Graphics g) {
@@ -265,8 +277,14 @@ public class BombermanComponent extends JComponent {
                     g.drawImage(boxImage, x, y, null);
                    
                     } else if (tile instanceof Field) {
-                        g.drawImage(fieldImage, x, y, null); 
-                        tile.setImage(fieldImage);
+                         g.drawImage(fieldImage, x, y, this);
+                            Item item = ((Field)tile).getItem();
+                            if (item != null) {
+                                Image itemImage = getItemImage(item);
+                                if (itemImage != null) {
+                                    g.drawImage(itemImage, x, y, this);  // Draw the item image
+               }
+           }
                     }
                 
 
@@ -277,8 +295,10 @@ public class BombermanComponent extends JComponent {
             // Draw all players 
         for (Player player : players) { 
             if (player.isAlive) { // Only draw if the player is alive
-                int playerX = player.currentCol * SQUARE_SIZE;
-                int playerY = player.currentRow * SQUARE_SIZE;
+                checkPowerUpCollision(player);
+                //System.out.println(player.blastRange);
+                int playerX = (int) Math.floor(player.currentCol * SQUARE_SIZE);
+                int playerY = (int) Math.floor(player.currentRow * SQUARE_SIZE);
 
                 // Assuming each player has its unique image
                 g.drawImage(player.getPlayerImage(), playerX, playerY, null); 
@@ -302,10 +322,10 @@ public class BombermanComponent extends JComponent {
                 g.drawImage(bombImage, bombX, bombY, null);
             } else {
                 // Draw the explosion
-                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 1, 0, 3);
-                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, -1, 0, 3);
-                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 0, 1, 3);
-                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 0, -1, 3);
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 1, 0, bomb.getExplosionRadius());
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, -1, 0, bomb.getExplosionRadius());
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 0, 1, bomb.getExplosionRadius());
+                drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 0, -1, bomb.getExplosionRadius());
                 System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
                 iterator.remove();
             }
@@ -335,6 +355,8 @@ public class BombermanComponent extends JComponent {
 //                Box box = (Box) tiles[row][col];
 //                Item item = box.getItem();
 //                tiles[row][col] = new Field(row, col);
+   // Fiel
+        //            (tiles[row][col].setItem(item);
 //                g.drawImage(fieldImage, newX, newY, null); // Ensure field image is drawn first
 //                if (item != null) {
 //                    Image itemImage = getItemImage(item);
@@ -367,19 +389,25 @@ public class BombermanComponent extends JComponent {
 
             // Ensure only to process if it's a Box
             if (tile instanceof Box) {
-                Box box = (Box) tile;
-                Item item = box.destroyAndGetItem(); // Get item if any, and signify that the box is destroyed
-                tiles[row][col] = new Field(row, col); // Replace the box with a field regardless of item presence
+                  Box box = (Box) tile;
+                Item item = box.destroyAndGetItem(); // Get item from the destroyed box
+                Field field = new Field(row, col);  // Create a new Field where the Box was
+                field.setItem(item);  // Set the item to the field if any
+                tiles[row][col] = field;  // Replace the box with a field in the tiles array
 
                 g.drawImage(fieldImage, newX, newY, null); // Draw the field image first
+//               if(((Field)(tiles[row][col])).getItem()!=null){
+//                   System.out.println("Filed GET NOT NULLLLLLLLL");
+//               }
+               
                 if (item != null) {
+                   // System.out.println("iten NOT NULLLLL");
                     Image itemImage = getItemImage(item);
                     if (itemImage != null) {
-                        g.drawImage(itemImage, newX, newY, null); // Draw the item image last so it's on top
-                        System.out.println("Drawing item at " + newX + ", " + newY);
+                        g.drawImage(itemImage, newX, newY, null); // Draw item image if present
                     }
                 }
-                g.drawImage(explosionImage, newX, newY, null);
+                g.drawImage(explosionImage, newX, newY, null); // Draw explosion image on top
                 break; // Stop further explosion propagation in this direction
             } else if (!(tile instanceof Wall)) {
                 g.drawImage(explosionImage, newX, newY, null);

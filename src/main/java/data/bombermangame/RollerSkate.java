@@ -9,14 +9,17 @@ package data.bombermangame;
  * @author lenovo
  */
 public class RollerSkate extends PowerUp implements Item {
-    @Override
+
+    public RollerSkate(int duration) {
+        super(duration);
+    }
+     @Override
     public void applyEffect(Player player) {
-//        player.increaseSpeed();
+        player.increaseSpeed(); // Only applies if speed hasn't already been increased
     }
 
     @Override
     public void removeEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        // Speed increase does not expire, no removal logic
     }
-    
 }

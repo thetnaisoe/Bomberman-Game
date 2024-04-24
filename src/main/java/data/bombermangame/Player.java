@@ -8,9 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 /**
  *
- * @author ThetNaingSoe
+ * @author DATA
  */
 public class Player {
     public String name;
@@ -20,6 +23,11 @@ public class Player {
     private BombermanComponent bombermanComponent; 
     private Image playerImage;
     private static final int SQUARE_SIZE = 50;
+    private Map<PowerUp, Long> activePowerUps = new HashMap<>();
+    private int bombCount = 1;
+    public int blastRange = 1;
+    private boolean isInvincible = false;
+    private boolean speedIncreased = false;
 
     // Constructor
     public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, String imagePath ) {
@@ -35,6 +43,30 @@ public class Player {
             e.printStackTrace();
         }
     }
+    public void incrementBombCount() {
+        bombCount++;
+    }
+     public void decrementBombCount() {
+        bombCount = Math.max(1, bombCount - 1); // Ensure bomb count doesn't drop below 1
+    }
+      public void incrementBlastRange() {
+        blastRange++;
+    }
+      public void decrementBlastRange() {
+        blastRange = Math.max(1, blastRange - 1); // Ensure blast range doesn't drop below 1
+    }
+
+    public void increaseSpeed() {
+        if (!speedIncreased) {
+            speedIncreased = true;
+            // Increase movement speed, e.g., reduce movement delay or increase movement increment
+        }
+    }
+     public void setInvincible(boolean invincible) {
+        isInvincible = invincible;
+        // Optionally add visual indicator
+    }
+
     
     
     public void moveUp(Tile[][] tiles) {
@@ -77,15 +109,30 @@ public class Player {
 
     }
     
-    public void dropBomb(Tile[][] tiles, ArrayList<Bomb> bombs) {
-        if (!isAlive) return; // Check if the player is alive
-
-        Bomb bomb = new Bomb(currentRow, currentCol);
-        bombs.add(bomb); // Add the bomb to the list of bombs
-
-        bomb.detonate(tiles);
+     public void dropBomb(Tile[][] tiles, ArrayList<Bomb> bombs) {
+        if (!isAlive || bombs.size() >= bombCount) return;
+        Bomb bomb = new Bomb(currentRow, currentCol, blastRange); // Assume Bomb constructor can take blastRange
+        bombs.add(bomb);
+        bomb.detonate(tiles, blastRange); // Ensure bomb detonation logic uses the blastRange
     }
+    public void pickUpPowerUp(PowerUp powerUp) {
+    long expiryTime = System.currentTimeMillis() + powerUp.duration;
+    activePowerUps.put(powerUp, expiryTime);
+    powerUp.applyEffect(this);
+}
 
+// Call this method periodically, e.g., every frame or on a timer
+public void updatePowerUps() {
+    long currentTime = System.currentTimeMillis();
+    Iterator<Map.Entry<PowerUp, Long>> it = activePowerUps.entrySet().iterator();
+    while (it.hasNext()) {
+        Map.Entry<PowerUp, Long> entry = it.next();
+        if (currentTime > entry.getValue()) {
+            entry.getKey().removeEffect(this);
+            it.remove();
+        }
+    }
+}
 
 
 
@@ -98,3 +145,4 @@ public class Player {
         return playerImage;
     }
 }
+

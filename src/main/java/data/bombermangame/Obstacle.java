@@ -10,4 +10,18 @@ package data.bombermangame;
  */
 public class Obstacle extends PowerUp {
     
+    public Obstacle(int duration) {
+        super(duration);
+    }
+
+    @Override
+    public void applyEffect(Player player) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void removeEffect(Player player) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
 }

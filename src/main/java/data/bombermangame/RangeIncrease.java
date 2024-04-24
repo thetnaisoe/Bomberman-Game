@@ -9,15 +9,20 @@ package data.bombermangame;
  * @author lenovo
  */
 public class RangeIncrease extends PowerUp implements Item{
-  
-    @Override
+
+    public RangeIncrease(int duration) {
+        super(duration);
+    }
+     @Override
     public void applyEffect(Player player) {
-//        player.increaseBlastRange();
+        player.incrementBlastRange();
     }
 
     @Override
     public void removeEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        player.decrementBlastRange();
     }
+  
+   
     
 }

@@ -8,6 +8,19 @@ package data.bombermangame;
  *
  * @author lenovo
  */
-public class Invincibility {
+public class Invincibility extends PowerUp{
+
+    public Invincibility(int duration) {
+        super(duration);
+    }
+    @Override
+    public void applyEffect(Player player) {
+        player.setInvincible(true);
+    }
+
+    @Override
+    public void removeEffect(Player player) {
+        player.setInvincible(false);
+    }
     
 }

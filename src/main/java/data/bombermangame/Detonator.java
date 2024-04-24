@@ -9,6 +9,10 @@ package data.bombermangame;
  * @author lenovo
  */
 public class Detonator extends PowerUp implements Item{
+
+    public Detonator(int duration) {
+        super(duration);
+    }
      @Override
        public void applyEffect(Player player) {
 //        player.activateDetonator();
