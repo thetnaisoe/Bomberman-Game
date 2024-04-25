@@ -104,6 +104,6 @@ public class Monster {
 
     public void endGame(Player winner) {
         // Display a pop-up message with the winner's name
-        JOptionPane.showMessageDialog(null, winner.getName() + " is the winner!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        //JOptionPane.showMessageDialog(null, winner.getName() + " is the winner!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 }
