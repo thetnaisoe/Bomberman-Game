@@ -65,6 +65,7 @@ public class BombermanFrame extends JFrame{
         }
 
         repaint(); // Trigger a repaint to reflect changes 
+         bombermanComponent.repaint(); 
     }
     
     private void setupGame() {
