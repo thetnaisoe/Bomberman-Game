@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image;
+import javax.swing.JOptionPane;
 /**
  *
  * @author ThetNaingSoe
@@ -76,7 +77,7 @@ public class Monster {
         }
     } 
     
-    private boolean collidesWithPlayer(int row, int col) {
+    public boolean collidesWithPlayer(int row, int col) {
         for (Player player : players) { // Assuming you have access to the players list
             if (player.isAlive && player.currentRow == row && player.currentCol == col) {
                 handlePlayerCollision(player); // Pass the collided player to the handler
@@ -86,10 +87,23 @@ public class Monster {
         return false; 
     }
 
-    private void handlePlayerCollision(Player player) {
+    public void handlePlayerCollision(Player player) {
         player.isAlive = false;
-        if (!player.isAlive) { 
-            //endGame(); 
+        int alivePlayers = 0;
+        Player lastAlivePlayer = null;
+        for (Player p : players) {
+            if (p.isAlive) {
+                alivePlayers++;
+                lastAlivePlayer = p;
+            }
         }
+        if (alivePlayers == 1) {
+            endGame(lastAlivePlayer);
+        }
+    }
+
+    public void endGame(Player winner) {
+        // Display a pop-up message with the winner's name
+        JOptionPane.showMessageDialog(null, winner.getName() + " is the winner!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
     }
 }
