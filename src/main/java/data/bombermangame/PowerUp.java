@@ -10,9 +10,9 @@ package data.bombermangame;
  */
 public abstract class PowerUp implements Item {
     
-    protected int duration; // Duration in milliseconds
+    protected long duration; // Duration in milliseconds
 
-    public PowerUp(int duration) {
+    public PowerUp(long duration) {
         this.duration = duration;
     }
     int time;

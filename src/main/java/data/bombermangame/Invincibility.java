@@ -10,7 +10,7 @@ package data.bombermangame;
  */
 public class Invincibility extends PowerUp{
 
-    public Invincibility(int duration) {
+    public Invincibility(long duration) {
         super(duration);
     }
     @Override

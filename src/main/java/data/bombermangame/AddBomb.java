@@ -8,21 +8,20 @@ package data.bombermangame;
  *
  * @author lenovo
  */
-public class RangeIncrease extends PowerUp implements Item{
+public class AddBomb extends PowerUp {
 
-    public RangeIncrease(long duration) {
+    public AddBomb(long duration) {
         super(duration);
     }
-     @Override
+
+    @Override
     public void applyEffect(Player player) {
-        player.incrementBlastRange();
+       player.incrementBombCount();
     }
 
     @Override
     public void removeEffect(Player player) {
-        player.decrementBlastRange();
+      player.decrementBlastRange();
     }
-  
-   
     
 }

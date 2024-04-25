@@ -14,7 +14,7 @@ public class Box extends Tile{
      private Item item;
     
     private static final Item[] items = {
-        new RangeIncrease(1000), new Detonator(1000), new RollerSkate(1000),
+        new RangeIncrease(10000), new AddBomb(10000),new Detonator(10000),new Invincibility(10000),//, new RollerSkate(10000)
         // Add curse items here
     };
      //Tile[][] tiles;
@@ -41,7 +41,7 @@ public class Box extends Tile{
     System.out.println("Attempting to drop an item with a chance of " + dropChance);
     if (Math.random() < dropChance) {
         Item[] possibleItems = {
-            new RangeIncrease(10), new Detonator(10), new RollerSkate(10),
+            new RangeIncrease(System.currentTimeMillis() +10000), new AddBomb(10000),new Detonator(10000),new Invincibility(10000),//, new RollerSkate(10000)
             // Add other items or curses here
         };
         this.item = possibleItems[(int) (Math.random() * possibleItems.length)];

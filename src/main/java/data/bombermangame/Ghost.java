@@ -10,7 +10,7 @@ package data.bombermangame;
  */
 public class Ghost extends PowerUp {
 
-    public Ghost(int duration) {
+    public Ghost(long duration) {
         super(duration);
     }
 

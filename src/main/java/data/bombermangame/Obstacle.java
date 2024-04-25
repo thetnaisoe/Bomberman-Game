@@ -10,7 +10,7 @@ package data.bombermangame;
  */
 public class Obstacle extends PowerUp {
     
-    public Obstacle(int duration) {
+    public Obstacle(long duration) {
         super(duration);
     }
 

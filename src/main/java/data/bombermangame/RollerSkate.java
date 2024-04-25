@@ -10,7 +10,7 @@ package data.bombermangame;
  */
 public class RollerSkate extends PowerUp implements Item {
 
-    public RollerSkate(int duration) {
+    public RollerSkate(long duration) {
         super(duration);
     }
      @Override

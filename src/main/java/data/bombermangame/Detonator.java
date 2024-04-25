@@ -10,17 +10,17 @@ package data.bombermangame;
  */
 public class Detonator extends PowerUp implements Item{
 
-    public Detonator(int duration) {
+    public Detonator(long duration) {
         super(duration);
     }
      @Override
        public void applyEffect(Player player) {
-//        player.activateDetonator();
+        player.setDetonator(true);
     }
 
     @Override
     public void removeEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+     player.setDetonator(false);
     }
 
 }

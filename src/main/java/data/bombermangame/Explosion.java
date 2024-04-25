@@ -60,7 +60,7 @@ public class Explosion {
         }
 
         for (Player player : BombermanComponent.players) {
-            if (player.currentRow == newX && player.currentCol == newY) {
+            if (player.currentRow == newX && player.currentCol == newY && !player.getInvincible()) {
                 player.isAlive = false;
             }
         }

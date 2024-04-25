@@ -38,6 +38,8 @@ public class BombermanComponent extends JComponent {
     public Image blastRangeImage;
     public Image detonatorImage;
     public Image rollerSkateImage;
+    public Image invincableImage;
+     public Image addBombImage;
     
     public BombermanComponent() {
         try {
@@ -85,8 +87,20 @@ public class BombermanComponent extends JComponent {
             e.printStackTrace();
         }
         try {
+            addBombImage = ImageIO.read(new File("assets/powerups/addBombP.png")); // Replace with your image path 
+            addBombImage = addBombImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
             rollerSkateImage = ImageIO.read(new File("assets/powerups/RollerP.png")); // Replace with your image path 
             rollerSkateImage = rollerSkateImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+         try {
+            invincableImage = ImageIO.read(new File("assets/powerups/ShieldP.png")); // Replace with your image path 
+            invincableImage = invincableImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,7 +145,7 @@ public class BombermanComponent extends JComponent {
         switch (symbol) {
             case 'W': return new Wall(row, col);
             case 'B': 
-                System.out.println("Creating Box at row: " + row + ", col: " + col);
+           //     System.out.println("Creating Box at row: " + row + ", col: " + col);
                 Box box = new Box(row, col);
             box.maybeDropItem(); // Decide if this box will have an item when destroyed
             return box; 
@@ -234,10 +248,15 @@ public class BombermanComponent extends JComponent {
 
          if (item instanceof RangeIncrease) {
         return blastRangeImage;
-    } else if (item instanceof Detonator) {
-        return detonatorImage;
+    } else if (item instanceof AddBomb) {
+        return addBombImage;
     } else if (item instanceof RollerSkate) {
         return rollerSkateImage;
+    } else if (item instanceof Invincibility) {
+        return invincableImage;
+    }
+          else if (item instanceof Detonator) {
+        return detonatorImage;
     }
     return null;
 }
@@ -299,7 +318,7 @@ public class BombermanComponent extends JComponent {
                 //System.out.println(player.blastRange);
                 int playerX = (int) Math.floor(player.currentCol * SQUARE_SIZE);
                 int playerY = (int) Math.floor(player.currentRow * SQUARE_SIZE);
-
+                
                 // Assuming each player has its unique image
                 g.drawImage(player.getPlayerImage(), playerX, playerY, null); 
             }
@@ -328,6 +347,7 @@ public class BombermanComponent extends JComponent {
                 drawExplosion(g, bomb.getCol() * SQUARE_SIZE, bomb.getRow() * SQUARE_SIZE, 0, -1, bomb.getExplosionRadius());
                 System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
                 iterator.remove();
+                bombs.remove(bomb);
             }
         }
         }
