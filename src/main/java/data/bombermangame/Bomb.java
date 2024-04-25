@@ -15,12 +15,12 @@ public class Bomb {
     private boolean exploded; // Indicates if the bomb has exploded
     public int explosionRadius; // Radius of the bomb's explosion (optional)
 
-    public Bomb(int row, int col) {
+    public Bomb(int row, int col,int range) {
         this.row = row;
         this.col = col;
         this.exploded = false;
         // Set a default explosion radius or customize it as needed
-        this.explosionRadius = 3; // Example radius
+        this.explosionRadius = range; // Example radius
     }
 
     // Getters and setters for row, col, and exploded fields
@@ -50,7 +50,7 @@ public class Bomb {
     }
 
     // Method to detonate the bomb
-    public void detonate(Tile[][] tiles) {
+    public void detonate(Tile[][] tiles,int Range) {
         // Detonate the bomb after a 2-second delay
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -60,7 +60,7 @@ public class Bomb {
                 exploded = true;
                 System.out.println("booom");
                 // Create explosions and apply effects
-                Explosion explosion = new Explosion(row, col, explosionRadius);
+                Explosion explosion = new Explosion(row, col, Range);
                 explosion.detonate(tiles);
             }
         }, 2000); // 2000 milliseconds = 2 seconds
