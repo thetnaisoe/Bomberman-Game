@@ -16,12 +16,18 @@ public class Ghost extends PowerUp {
 
     @Override
     public void applyEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    player.setGhost(true);
     }
 
     @Override
     public void removeEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+       // throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    player.setGhost(true);
+     Tile currentTile = BombermanComponent.tiles[player.currentRow][player.currentCol];
+        if (currentTile instanceof Wall || currentTile instanceof Box) {
+            player.isAlive=false;
+        }
     }
     
 }

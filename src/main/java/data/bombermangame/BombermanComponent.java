@@ -43,6 +43,8 @@ public class BombermanComponent extends JComponent {
      public Image rangeDecreaseImage;
      public Image bombBlockImage;
      public Image dropAllImage;
+     public Image ghostImage;
+     public Image obstaclePImage;
      
     
     public BombermanComponent() {
@@ -126,6 +128,18 @@ public class BombermanComponent extends JComponent {
         } catch (IOException e) {
             e.printStackTrace();
         }
+              try {
+            ghostImage = ImageIO.read(new File("assets/Powerups/GhostP.png")); // Replace with your image path 
+            ghostImage = ghostImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+                 try {
+            obstaclePImage = ImageIO.read(new File("assets/Powerups/ObsticaleP.png")); // Replace with your image path 
+            obstaclePImage = obstaclePImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     public void setTiles(Tile[][] tiles) {
@@ -179,8 +193,8 @@ public class BombermanComponent extends JComponent {
     
     public void setupKeyListeners(JComponent component) {
     // Example key assignments
-    addPlayerKeys(players.get(0), KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_SPACE);  
-    addPlayerKeys(players.get(1), KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SHIFT); 
+    addPlayerKeys(players.get(0), KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_SPACE, KeyEvent.VK_O);  
+    addPlayerKeys(players.get(1), KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SHIFT, KeyEvent.VK_L); 
 
     // Create key listeners
     for (Player player : players) {
@@ -188,13 +202,14 @@ public class BombermanComponent extends JComponent {
     }
 }
 
-    private void addPlayerKeys(Player player, int upKey, int downKey, int leftKey, int rightKey, int bombKey) {
+    private void addPlayerKeys(Player player, int upKey, int downKey, int leftKey, int rightKey, int bombKey, int obstacleKey) {
         HashSet<Integer> keySet = new HashSet<>();
         keySet.add(upKey);
         keySet.add(downKey);
         keySet.add(leftKey);
         keySet.add(rightKey);
         keySet.add(bombKey); // Add bomb key to the set of player keys
+        keySet.add(obstacleKey);
         playerKeyMap.put(player, keySet);
     }
 
@@ -246,6 +261,16 @@ public class BombermanComponent extends JComponent {
                             player.moveRight(tiles);
                         }
                         break;
+                         case KeyEvent.VK_O: // Assuming Player 1 uses 'O' to place obstacle
+                        if (player == players.get(0)) {
+                            player.placeObstacle(tiles);
+                        }
+                        break;
+                    case KeyEvent.VK_L: // Assuming Player 2 uses 'L' to place obstacle
+                        if (player == players.get(1)) {
+                            player.placeObstacle(tiles);
+                        }
+                        break;
                     case KeyEvent.VK_SHIFT:
                         if (player == players.get(1)) { // Check if Player 2
                             // Drop bomb for Player 2
@@ -253,6 +278,7 @@ public class BombermanComponent extends JComponent {
                         }
                     break;
                     }
+                
 
                 }
             }
@@ -289,6 +315,14 @@ public class BombermanComponent extends JComponent {
               else if (item instanceof ForcedBombDrop) {
         return dropAllImage;
     }
+                   else if (item instanceof Ghost) {
+        return ghostImage;
+    }
+                else if (item instanceof ObstaclePowerUp) {
+        return obstaclePImage;
+    }
+        
+        
     return null;
 }
     private void checkPowerUpCollision(Player player) {
@@ -330,7 +364,10 @@ public class BombermanComponent extends JComponent {
                     // Draw box image last so it's on top
                     g.drawImage(boxImage, x, y, null);
                    
-                    } else if (tile instanceof Field) {
+                    } else if (tile instanceof Obstacle) {
+                    // Draw the obstacle image
+                    g.drawImage(boxImage, x, y, null);
+                }else if (tile instanceof Field) {
                          g.drawImage(fieldImage, x, y, this);
                             Item item = ((Field)tile).getItem();
                             if (item != null) {
@@ -464,9 +501,20 @@ public class BombermanComponent extends JComponent {
                 }
                 g.drawImage(explosionImage, newX, newY, null); // Draw explosion image on top
                 break; // Stop further explosion propagation in this direction
-            } else if (!(tile instanceof Wall)) {
+            }
+            else if ((tile instanceof Obstacle)) {
+                 Field field = new Field(row, col); 
+                tiles[row][col] = field;
+                g.drawImage(fieldImage, newX, newY, null);
+                  g.drawImage(explosionImage, newX, newY, null); // Draw explosion image on top
+                break; // 
+            }
+            
+            else if (!(tile instanceof Wall)) {
                 g.drawImage(explosionImage, newX, newY, null);
-            } else {
+            }
+            
+            else {
                 break; // Stop the explosion at a wall
             }
         }
