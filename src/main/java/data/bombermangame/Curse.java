@@ -8,18 +8,17 @@ package data.bombermangame;
  *
  * @author lenovo
  */
-public class Curse implements Item {
+public abstract class Curse implements Item {
 
-    int time;
-    @Override
-    public void applyEffect(Player player) {
-      
     
+     protected long duration; // Duration in milliseconds
+     
+     
+     public Curse(long duration){
+        this.duration = duration;
     }
-
     @Override
-    public void removeEffect(Player player) {
-      
-    }
-    
+    public abstract void applyEffect(Player player) ;
+    @Override
+    public abstract void removeEffect(Player player);
 }

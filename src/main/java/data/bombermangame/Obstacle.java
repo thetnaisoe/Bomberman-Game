@@ -4,24 +4,49 @@
  */
 package data.bombermangame;
 
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
 /**
  *
  * @author lenovo
  */
-public class Obstacle extends PowerUp {
-    
-    public Obstacle(long duration) {
-        super(duration);
+
+
+/**
+ * Obstacle class represents an unbreakable block that does not contain any items.
+ */
+public class Obstacle extends Tile {
+    private static final String OBSTACLE_IMAGE_PATH = "assets/fields/block.png"; // Define the path to the obstacle image
+
+    public Obstacle(int row, int col) {
+        super(row, col);
+        this.tileType = TileType.OBSTACLE; // Assuming TileType is an enum you have defined for different types of tiles
+        try {
+            this.setImage(ImageIO.read(new File(OBSTACLE_IMAGE_PATH))); // Load the obstacle image
+        } catch (IOException e) {
+            e.printStackTrace(); // Handle exceptions if the image cannot be loaded
+        }
     }
 
     @Override
-    public void applyEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean isPassable() {
+        return false; // Obstacles are not passable
     }
 
     @Override
-    public void removeEffect(Player player) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean canDrop() {
+        return false; // Obstacles do not allow drops
     }
-    
+
+    @Override
+    public void setDestroyed(boolean destroyed) {
+        this.destroyed = destroyed; // Optionally add additional logic for when an obstacle is destroyed
+    }
+
+    @Override
+    public boolean destroyed() {
+        return this.destroyed; // Return the destruction state
+    }
 }
