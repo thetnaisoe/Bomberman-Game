@@ -58,6 +58,10 @@ public class Explosion {
 //            tile.Drop();
             return false; // Stop the explosion if it reaches a box
         }
+         if (tile instanceof Obstacle) {
+           
+            return false; // Stop the explosion if it reaches a obstacle
+        }
 
         for (Player player : BombermanComponent.players) {
             if (player.currentRow == newX && player.currentCol == newY && !player.getInvincible()) {

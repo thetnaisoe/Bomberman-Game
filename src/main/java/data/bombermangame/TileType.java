@@ -9,5 +9,5 @@ package data.bombermangame;
  * @author ThetNaingSoe
  */
 public enum TileType {
-    FIELD, WALL, BOX 
+    FIELD, WALL, BOX , OBSTACLE
 }
