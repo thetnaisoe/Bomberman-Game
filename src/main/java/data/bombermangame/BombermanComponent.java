@@ -40,6 +40,10 @@ public class BombermanComponent extends JComponent {
     public Image rollerSkateImage;
     public Image invincableImage;
      public Image addBombImage;
+     public Image rangeDecreaseImage;
+     public Image bombBlockImage;
+     public Image dropAllImage;
+     
     
     public BombermanComponent() {
         try {
@@ -101,6 +105,24 @@ public class BombermanComponent extends JComponent {
          try {
             invincableImage = ImageIO.read(new File("assets/powerups/ShieldP.png")); // Replace with your image path 
             invincableImage = invincableImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+           try {
+            rangeDecreaseImage = ImageIO.read(new File("assets/Curses/rangeDecreaseC.png")); // Replace with your image path 
+            rangeDecreaseImage = rangeDecreaseImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+            try {
+            bombBlockImage = ImageIO.read(new File("assets/Curses/bombBlockC.png")); // Replace with your image path 
+            bombBlockImage = bombBlockImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+            try {
+            dropAllImage = ImageIO.read(new File("assets/Curses/dropAllC.png")); // Replace with your image path 
+            dropAllImage = dropAllImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -258,6 +280,15 @@ public class BombermanComponent extends JComponent {
           else if (item instanceof Detonator) {
         return detonatorImage;
     }
+           else if (item instanceof BombBlock) {
+        return bombBlockImage;
+    }
+              else if (item instanceof RangeDecrease) {
+        return rangeDecreaseImage;
+    }
+              else if (item instanceof ForcedBombDrop) {
+        return dropAllImage;
+    }
     return null;
 }
     private void checkPowerUpCollision(Player player) {
@@ -268,6 +299,10 @@ public class BombermanComponent extends JComponent {
         Item item = ((Field) tile).getItem();
         if (item instanceof PowerUp) {
             player.pickUpPowerUp((PowerUp) item);
+            ((Field) tile).setItem(null); // Remove the power-up from the field
+        }
+        if (item instanceof Curse) {
+            player.pickUpCurse((Curse) item);
             ((Field) tile).setItem(null); // Remove the power-up from the field
         }
     }

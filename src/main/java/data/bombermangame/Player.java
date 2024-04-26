@@ -24,6 +24,7 @@ public class Player {
     private Image playerImage;
     private static final int SQUARE_SIZE = 50;
     private Map<PowerUp, Long> activePowerUps = new HashMap<>();
+     private Map<Curse, Long> activeCurses = new HashMap<>();
     private int bombCount = 1;
     public int blastRange = 1;
     private boolean isInvincible = false;
@@ -31,6 +32,8 @@ public class Player {
     private boolean speedIncreased = false;
     public int dropped = 0;
      public ArrayList<Bomb> bombss = new ArrayList<>() ;
+       private boolean canDropBombs = true; // New attribute to track if player can drop bombs
+        private boolean forcedBombDrop = false; // New attribute to track if player is forced to drop bombs
 
     // Constructor
     public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, String imagePath ) {
@@ -79,6 +82,20 @@ public class Player {
             public boolean setDetonator(){
               return isDetonator;
           }
+            public void setCanDropBombs(boolean canDrop) {
+        this.canDropBombs = canDrop;
+    }
+
+    public boolean getCanDropBombs() {
+        return this.canDropBombs;
+    }
+     public void setForcedBombDrop(boolean forced) {
+        this.forcedBombDrop = forced;
+    }
+
+    public boolean getForcedBombDrop() {
+        return this.forcedBombDrop;
+    }
 
     
     
@@ -87,21 +104,29 @@ public class Player {
         int targetRow = currentRow - 1;
         if (targetRow >= 0 && tiles[targetRow][currentCol].isPassable()) {
             currentRow = targetRow;
-            updatePowerUps();
+            updatePowerUpsAndCurses();
             requestRepaint();
+             if (forcedBombDrop) {
+            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
         }
+        }
+        
+        
 
     }
-
+int drp=0;
     public void moveDown(Tile[][] tiles) {
         if (!isAlive) return;
         int targetRow = currentRow + 1;
         if (targetRow < tiles.length && tiles[targetRow][currentCol].isPassable()) {
             currentRow = targetRow; 
-            updatePowerUps();
+            updatePowerUpsAndCurses();
             requestRepaint(); 
+             if (forcedBombDrop) {
+            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
         }
 
+    }
     }
 
     public void moveLeft(Tile[][] tiles) {
@@ -109,8 +134,11 @@ public class Player {
         int targetCol = currentCol - 1;
         if (targetCol >= 0 && tiles[currentRow][targetCol].isPassable()) {
             currentCol = targetCol;
-            updatePowerUps();
+            updatePowerUpsAndCurses();
             requestRepaint(); 
+              if (forcedBombDrop) {
+            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
+        }
         }
  
     }
@@ -120,16 +148,20 @@ public class Player {
         int targetCol = currentCol + 1;
         if (targetCol < tiles[0].length && tiles[currentRow][targetCol].isPassable()) {
             currentCol = targetCol;
-            updatePowerUps();
+            updatePowerUpsAndCurses();
             requestRepaint(); 
+             if (forcedBombDrop) {
+            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
+        }
+             
         }
 
     }
    Tile[][] tls;
      public void dropBomb(Tile[][] tiles, ArrayList<Bomb> bombs) {
          this.tls=tiles;
-        if (!isAlive || bombs.size() >= bombCount) return;
-        int b= bombCount;
+        if (!isAlive || !canDropBombs|| bombs.size() >= bombCount) return;
+        
         Bomb bomb = new Bomb(currentRow, currentCol, blastRange); // Assume Bomb constructor can take blastRange
         bombs.add(bomb);
         dropped++;
@@ -144,7 +176,13 @@ public class Player {
             
        }
     }
-    public void pickUpPowerUp(PowerUp powerUp) {
+    public void pickUpCurse(Curse curse) {
+    long expiryTime = System.currentTimeMillis() + curse.duration;
+      //  System.out.println("Piched it up");
+    activeCurses.put(curse, expiryTime);
+    curse.applyEffect(this);
+}
+       public void pickUpPowerUp(PowerUp powerUp) {
     long expiryTime = System.currentTimeMillis() + powerUp.duration;
       //  System.out.println("Piched it up");
     activePowerUps.put(powerUp, expiryTime);
@@ -167,6 +205,7 @@ public void updatePowerUps() {
             entry.getKey().removeEffect(this);
             for(Bomb bmb : bombss){
             bmb.detonate(tls, blastRange);}
+            dropped=0;
              it.remove();
              
             
@@ -179,6 +218,24 @@ public void updatePowerUps() {
         }
     }
 }
+ public void updateCurses() {
+        long currentTime = System.currentTimeMillis();
+        Iterator<Map.Entry<Curse, Long>> iterator = activeCurses.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<Curse, Long> entry = iterator.next();
+            if (currentTime > entry.getValue()) { // Check if the curse has expired
+                entry.getKey().removeEffect(this); // Remove the effect of the curse
+                iterator.remove(); // Remove the curse from the map
+            }
+        }
+    }
+
+    // Method to be called periodically, e.g., in the game loop
+    public void updatePowerUpsAndCurses() {
+        updatePowerUps();
+        updateCurses();
+    }
 
 
 

@@ -15,7 +15,7 @@ public abstract class PowerUp implements Item {
     public PowerUp(long duration) {
         this.duration = duration;
     }
-    int time;
+  
 
     @Override
     public abstract void applyEffect(Player player) ;
