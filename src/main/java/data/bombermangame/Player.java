@@ -46,6 +46,10 @@ public class Player {
             e.printStackTrace();
         }
     }
+    
+    public String getName(){
+        return name;
+    }
     public void incrementBombCount() {
         bombCount++;
     }
