@@ -1,0 +1,19 @@
+stages:
+  - compile
+  - test
+  - package
+
+compile:
+  stage: compile
+  script:
+    - mvn compile
+
+test:
+  stage: test
+  script:
+    - mvn test
+
+package:
+  stage: package
+  script:
+    - mvn package
