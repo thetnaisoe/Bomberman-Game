@@ -23,7 +23,7 @@ public class Player {
     public String name;
     public int currentRow;
     public int currentCol;
-    public boolean isAlive = true;
+    public boolean isAlive;
     private BombermanComponent bombermanComponent; 
     private Image playerImage;
     private static final int SQUARE_SIZE = 50;
@@ -35,6 +35,9 @@ public class Player {
     private boolean isDetonator = false;
     private boolean speedIncreased = false;
     public int dropped = 0;
+
+    public int gamesWon = 0;
+    
      public ArrayList<Bomb> bombss = new ArrayList<>() ;
        private boolean canDropBombs = true; // New attribute to track if player can drop bombs
         private boolean forcedBombDrop = false; // New attribute to track if player is forced to drop bombs
@@ -46,6 +49,7 @@ public class Player {
         this.name = name;
         this.currentRow = initialRow;
         this.currentCol = initialCol;
+        isAlive = true;
         this.bombermanComponent = bombermanComponent;
         try {
             Image loadedImage = ImageIO.read(new File(imagePath));
@@ -54,6 +58,18 @@ public class Player {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public int getGamesWon() {
+        return gamesWon;
+    }
+    
+    public void setGamesWon(int gamesWon) {
+        this.gamesWon = gamesWon;
+    }
+    
+    public String getName(){
+        return name;
     }
     public void incrementBombCount() {
         bombCount++;

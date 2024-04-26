@@ -524,6 +524,9 @@ public class BombermanComponent extends JComponent {
     private boolean isValidPosition(int x, int y) {
         return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
     }
+    
+
+
 
 }
 
