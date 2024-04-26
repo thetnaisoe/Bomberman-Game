@@ -4,7 +4,6 @@
  */
 package data.bombermangame;
 
-import java.awt.Image;
 import java.util.ArrayList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;

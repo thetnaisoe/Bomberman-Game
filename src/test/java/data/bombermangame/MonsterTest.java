@@ -4,7 +4,6 @@
  */
 package data.bombermangame;
 
-import java.awt.Image;
 import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -22,9 +21,11 @@ public class MonsterTest {
     private Monster monster;
     private Tile[][] tiles;
     private ArrayList<Player> players;
+    BombermanComponent bombermanComponent;
 
     @BeforeEach
     public void setUp() {
+        bombermanComponent = new BombermanComponent();
         tiles = new Tile[10][10];
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -32,8 +33,8 @@ public class MonsterTest {
             }
         }
         players = new ArrayList<>();
-        players.add(new Player("TestPlayer", 5, 5, null, "path/to/image")); 
-        monster = new Monster(tiles, 0, 0, players, "path/to/image"); 
+        players.add(new Player("TestPlayer", 5, 5, bombermanComponent, "assets/players/bombermanfrontgreen.png")); 
+        monster = new Monster(tiles, 0, 0, players, "assets/monsters/ghostfrontgreen.png"); 
     }
     
     @Test
