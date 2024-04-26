@@ -105,7 +105,7 @@ public class BombermanComponent extends JComponent {
             e.printStackTrace();
         }
          try {
-            invincableImage = ImageIO.read(new File("assets/powerups/ShieldP.png")); // Replace with your image path 
+            invincableImage = ImageIO.read(new File("assets/powerups/InvisibleP.png")); // Replace with your image path 
             invincableImage = invincableImage.getScaledInstance(SQUARE_SIZE, SQUARE_SIZE, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             e.printStackTrace();

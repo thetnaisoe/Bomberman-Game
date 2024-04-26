@@ -163,7 +163,7 @@ int drp=0;
     public void moveDown(Tile[][] tiles) {
         if (!isAlive) return;
         int targetRow = currentRow + 1;
-        if (targetRow < tiles.length && tiles[targetRow][currentCol].isPassable()||isGhost) {
+        if (targetRow < tiles.length && (tiles[targetRow][currentCol].isPassable())||isGhost) {
             currentRow = targetRow; 
             updatePowerUpsAndCurses();
             requestRepaint(); 
@@ -177,7 +177,7 @@ int drp=0;
     public void moveLeft(Tile[][] tiles) {
         if (!isAlive) return;
         int targetCol = currentCol - 1;
-        if (targetCol >= 0 && tiles[currentRow][targetCol].isPassable()||isGhost) {
+        if (targetCol >= 0 && (tiles[currentRow][targetCol].isPassable())||isGhost) {
             currentCol = targetCol;
             updatePowerUpsAndCurses();
             requestRepaint(); 
@@ -191,7 +191,7 @@ int drp=0;
     public void moveRight(Tile[][] tiles) {
         if (!isAlive) return;
         int targetCol = currentCol + 1;
-        if (targetCol < tiles[0].length && tiles[currentRow][targetCol].isPassable()||isGhost) {
+        if (targetCol < tiles[0].length && (tiles[currentRow][targetCol].isPassable())||isGhost) {
             currentCol = targetCol;
             updatePowerUpsAndCurses();
             requestRepaint(); 

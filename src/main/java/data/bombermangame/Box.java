@@ -38,7 +38,7 @@ public class Box extends Tile{
 //    }
         
    public void maybeDropItem() {
-    double dropChance = 0.3; // High chance to verify functionality
+    double dropChance = 0.8; // High chance to verify functionality
     System.out.println("Attempting to drop an item with a chance of " + dropChance);
     if (Math.random() < dropChance) {
         Item[] possibleItems = {
