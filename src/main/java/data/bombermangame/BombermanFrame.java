@@ -25,6 +25,7 @@ public class BombermanFrame extends JFrame{
     public Tile[][] tiles;
     public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Monster> monsters = new ArrayList<>();
+    private boolean isRoundOver = false;
     
     public BombermanFrame() throws HeadlessException{
         
@@ -63,7 +64,9 @@ public class BombermanFrame extends JFrame{
         for (Monster monster : monsters) {
             monster.moveToRandomDirection();  
         }
-
+        if (!isRoundOver) {
+            checkGameStatus();
+        }
         repaint(); // Trigger a repaint to reflect changes 
          bombermanComponent.repaint(); 
     }
@@ -101,5 +104,125 @@ public class BombermanFrame extends JFrame{
         
     protected void doUponExit(){
         System.exit(0);
+    }
+    
+        private boolean allPlayersDead() {
+        for (Player player : players) {
+            if (player.isAlive) {
+                return false; // At least one player is still alive
+            }
+        }
+        return true; // All players are dead
+    }
+        
+        private void checkGameStatus() {
+            for (Player player : players) {
+                if (!player.isAlive) {
+                    determineRoundWinner();
+                    break;
+                }
+            }
+        }
+
+    private void determineRoundWinner() {
+        Player winner = null;
+        int aliveCount = 0;
+
+        for (Player player : players) {
+            if (player.isAlive) {
+                winner = player;
+                aliveCount++;
+            }
+        }
+
+        if (aliveCount == 1) {
+        // Single winner
+        winner.gamesWon++; // Update win count
+
+        // Check if the player has won the game
+        if (winner.gamesWon == 3) {
+            // The player has won the game
+            String message = "Game Winner: " + winner.getName() + 
+                             "\nGames Won: " + winner.getGamesWon(); // Include total game wins
+            isRoundOver = true;
+            handleGameEnd(winner, message);
+        } else {
+            // The player has won the round but not the game
+            String message = "Round Winner: " + winner.getName() + 
+                             "\nGames Won: " + winner.getGamesWon(); // Include current game wins
+            isRoundOver = true;
+            new java.util.Timer().schedule( 
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        displayRoundResult(message); 
+                        resetGame();
+                    }
+                }, 
+                500 // Delay in milliseconds
+            );
+        }
+            } else if (allPlayersDead()) {
+        // All players dead - it's a draw
+        String message = "Round Result: Draw!";
+        isRoundOver = true;
+        new java.util.Timer().schedule( 
+            new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    displayRoundResult(message);
+                    resetGame();
+                }
+            }, 
+            500 // Delay in milliseconds
+        );
+    }
+    }
+    
+    private void handleGameEnd(Player winner, String message) {
+        new java.util.Timer().schedule( 
+            new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    displayGameResult(message);
+                    winner.setGamesWon(0); // Reset gamesWon count to 0
+                    resetGame();
+                }
+            }, 
+            500 // Delay in milliseconds
+        );
+    }
+    
+    private void resetGame() {
+        // Save the gamesWon count
+        Map<String, Integer> gamesWonCount = new HashMap<>();
+        for (Player player : players) {
+            gamesWonCount.put(player.getName(), player.getGamesWon());
+        }
+
+        // Clear the players and monsters
+        players.clear();
+        monsters.clear();
+
+        // Setup the game again
+        setupGame();
+
+        // Transfer the gamesWon count to the new Player objects
+        for (Player player : players) {
+            Integer gamesWon = gamesWonCount.get(player.getName());
+            if (gamesWon != null) {
+                player.setGamesWon(gamesWon);
+            }
+        }
+
+        isRoundOver = false;
+    }
+    
+    private void displayGameResult(String message) {
+        JOptionPane.showMessageDialog(this, message); 
+     }
+
+    private void displayRoundResult(String message) {
+       JOptionPane.showMessageDialog(this, message); 
     }
 }

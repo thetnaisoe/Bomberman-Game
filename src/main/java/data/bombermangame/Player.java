@@ -19,7 +19,7 @@ public class Player {
     public String name;
     public int currentRow;
     public int currentCol;
-    public boolean isAlive = true;
+    public boolean isAlive;
     private BombermanComponent bombermanComponent; 
     private Image playerImage;
     private static final int SQUARE_SIZE = 50;
@@ -30,13 +30,16 @@ public class Player {
     private boolean isDetonator = false;
     private boolean speedIncreased = false;
     public int dropped = 0;
-     public ArrayList<Bomb> bombss = new ArrayList<>() ;
+    public ArrayList<Bomb> bombss = new ArrayList<>() ;
+    public int gamesWon = 0;
+    
 
     // Constructor
     public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, String imagePath ) {
         this.name = name;
         this.currentRow = initialRow;
         this.currentCol = initialCol;
+        isAlive = true;
         this.bombermanComponent = bombermanComponent;
         try {
             Image loadedImage = ImageIO.read(new File(imagePath));
@@ -45,6 +48,14 @@ public class Player {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public int getGamesWon() {
+        return gamesWon;
+    }
+    
+    public void setGamesWon(int gamesWon) {
+        this.gamesWon = gamesWon;
     }
     
     public String getName(){

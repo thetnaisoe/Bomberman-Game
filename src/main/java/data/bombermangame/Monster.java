@@ -89,21 +89,10 @@ public class Monster {
 
     public void handlePlayerCollision(Player player) {
         player.isAlive = false;
-        int alivePlayers = 0;
-        Player lastAlivePlayer = null;
-        for (Player p : players) {
-            if (p.isAlive) {
-                alivePlayers++;
-                lastAlivePlayer = p;
-            }
-        }
-        if (alivePlayers == 1) {
-            endGame(lastAlivePlayer);
-        }
     }
 
-    public void endGame(Player winner) {
-        // Display a pop-up message with the winner's name
-        //JOptionPane.showMessageDialog(null, winner.getName() + " is the winner!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-    }
+//    public void endGame(Player winner) {
+//        // Display a pop-up message with the winner's name
+//        JOptionPane.showMessageDialog(null, winner.getName() + " is the winner!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+//    }
 }
