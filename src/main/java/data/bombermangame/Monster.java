@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image;
+import java.awt.Rectangle;
 import javax.swing.JOptionPane;
 /**
  *
@@ -41,6 +42,10 @@ public class Monster {
             System.err.println("Error loading monster image: " + imagePath); // More prominent error
             e.printStackTrace();
         }
+    }
+    
+    public Rectangle getBounds() {
+        return new Rectangle(currentCol * SQUARE_SIZE, currentRow * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     }
     
     public Image getMonsterImage() {

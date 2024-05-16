@@ -19,9 +19,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PlayerTest {
     
     Player player;
+    Monster monster;
     Tile[][] tiles;
     BombermanComponent bombermanComponent;
     ArrayList<Bomb> bombs;
+    ArrayList<Monster> monsters;
 
     @BeforeEach
     public void setUp() {
@@ -33,8 +35,8 @@ public class PlayerTest {
             }
         }
         bombs = new ArrayList<>();
-
-        player = new Player("TestPlayer", 5, 5, bombermanComponent, "assets/players/bombermanfrontgreen.png");
+        monsters = new ArrayList<>();
+        player = new Player("TestPlayer", 5, 5, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png");
     }
     
 

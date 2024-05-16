@@ -21,6 +21,7 @@ public class MonsterTest {
     private Monster monster;
     private Tile[][] tiles;
     private ArrayList<Player> players;
+    private ArrayList<Monster> monsters;
     BombermanComponent bombermanComponent;
 
     @BeforeEach
@@ -33,8 +34,10 @@ public class MonsterTest {
             }
         }
         players = new ArrayList<>();
-        players.add(new Player("TestPlayer", 5, 5, bombermanComponent, "assets/players/bombermanfrontgreen.png")); 
+        monsters = new ArrayList<>();
+        players.add(new Player("TestPlayer", 5, 5, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
         monster = new Monster(tiles, 0, 0, players, "assets/monsters/ghostfrontgreen.png"); 
+        monsters.add(monster);
     }
     
     @Test
