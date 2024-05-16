@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
+import javax.swing.Timer;
 
 /**
  *
@@ -23,7 +24,11 @@ import java.awt.Image;
  */
 public class BombermanComponent extends JComponent {
 
+    public int countdownTimeInSeconds = 90; // Example countdown time
+    private Timer countdownTimer;
+    private boolean isPainted = false;
     private static final int SQUARE_SIZE = 50; // Example size for rendering
+    public int borderLayer = 0;
     public static Tile[][] tiles; 
     public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Monster> monsters = new ArrayList<>();
@@ -368,15 +373,22 @@ public class BombermanComponent extends JComponent {
                     // Draw the obstacle image
                     g.drawImage(boxImage, x, y, null);
                 }else if (tile instanceof Field) {
-                         g.drawImage(fieldImage, x, y, this);
-                            Item item = ((Field)tile).getItem();
-                            if (item != null) {
-                                Image itemImage = getItemImage(item);
-                                if (itemImage != null) {
-                                    g.drawImage(itemImage, x, y, this);  // Draw the item image
-               }
-           }
+                    // Draw explosion image if it's set
+                    if (tile.getImage() == explosionImage) {
+                        g.drawImage(explosionImage, x, y, null);
+                    } else {
+                        // Draw field image
+                        g.drawImage(fieldImage, x, y, null); 
                     }
+                    // Draw item image if present
+                    Item item = ((Field) tile).getItem();
+                    if (item != null) {
+                        Image itemImage = getItemImage(item);
+                        if (itemImage != null) {
+                            g.drawImage(itemImage, x, y, null);
+                        }
+                    }
+                }
                 
 
                 }
@@ -384,25 +396,38 @@ public class BombermanComponent extends JComponent {
         }
         
             // Draw all players 
-        for (Player player : players) { 
-            if (player.isAlive) { // Only draw if the player is alive
-                checkPowerUpCollision(player);
-                //System.out.println(player.blastRange);
-                int playerX = (int) Math.floor(player.currentCol * SQUARE_SIZE);
-                int playerY = (int) Math.floor(player.currentRow * SQUARE_SIZE);
-                
-                // Assuming each player has its unique image
-                g.drawImage(player.getPlayerImage(), playerX, playerY, null); 
+        for (Player player : players) {
+            if (player.isAlive) {
+                int playerX = player.currentCol * SQUARE_SIZE;
+                int playerY = player.currentRow * SQUARE_SIZE;
+                // Check if the player is on a tile with an explosion image
+                if (tiles[player.currentRow][player.currentCol].getImage() == explosionImage) {
+                    // Player dies if on an explosion tile
+                    player.isAlive = false;
+                    // You may want to perform additional actions here, such as removing the player from the game
+                } else {
+                    // Draw the player if they are alive and not on an explosion tile
+                    g.drawImage(player.getPlayerImage(), playerX, playerY, null);
+                }
             }
         }
-        
-        for (Monster monster : monsters) { 
-            if (monster.isAlive) { 
+    
+    // Iterate through monsters
+        for (Monster monster : monsters) {
+            if (monster.isAlive) {
                 int monsterX = monster.currentCol * SQUARE_SIZE;
                 int monsterY = monster.currentRow * SQUARE_SIZE;
-                g.drawImage(monster.monsterImage, monsterX, monsterY, null); 
+                // Check if the monster is on a tile with an explosion image
+                if (tiles[monster.currentRow][monster.currentCol].getImage() == explosionImage) {
+                    // Monster dies if on an explosion tile
+                    monster.isAlive = false;
+                    // You may want to perform additional actions here, such as removing the monster from the game
+                } else {
+                    // Draw the monster if they are alive and not on an explosion tile
+                    g.drawImage(monster.monsterImage, monsterX, monsterY, null);
+                }
             }
-        } 
+        }
         Iterator<Bomb> iterator = bombs.iterator();
         while (iterator.hasNext()) {
             Bomb bomb = iterator.next();
@@ -422,52 +447,26 @@ public class BombermanComponent extends JComponent {
                 bombs.remove(bomb);
             }
         }
+        if (!isPainted) {
+            countdownTimer = new Timer(1000, e -> {
+                countdownTimeInSeconds--; // Decrement countdown value every second
+                if (countdownTimeInSeconds % 15 == 0 && countdownTimeInSeconds > 0) {
+                    // Call shrinkBorders() when countdownValue is divisible by 5
+                    shrinkBorders();
+                    repaint(); // Request a repaint after the borders shrink
+                }
+                if (countdownTimeInSeconds <= 0) {
+                    // Countdown finished, perform any final actions
+                    countdownTimer.stop();
+                    // Add any additional logic you want to execute when countdown finishes
+                    repaint(); // Request a repaint when countdown finishes
+                }
+            });
+            countdownTimer.start();
+            isPainted = true; // Set the flag to true after the first paintComponent call
         }
-    
-    
-//    private void drawExplosion(Graphics g, int x, int y, int dx, int dy, int range) {
-//        // Draw the central explosion image at the bomb's location
-//        g.drawImage(explosionImage, x, y, null);
-//
-//        // Draw explosions in positive x direction
-//        for (int i = 1; i <= range; i++) {
-//            int newX = x + i * SQUARE_SIZE * dx;
-//            int newY = y + i * SQUARE_SIZE * dy;
-//
-//            // Convert pixel coordinates to array indices
-//            int col = newX / SQUARE_SIZE;
-//            int row = newY / SQUARE_SIZE;
-//
-//            // Debugging: Print the calculated indices and the type of tile at those indices
-//            System.out.println("Checking for Box at col: " + col + ", row: " + row);
-//            if (isValidPosition(newX, newY)) {
-//                System.out.println("Tile type: " + tiles[row][col].getClass().getSimpleName());
-//                if (!(tiles[row][col] instanceof Wall)) {
-//                    if (tiles[row][col] instanceof Box) {
-//                Box box = (Box) tiles[row][col];
-//                Item item = box.getItem();
-//                tiles[row][col] = new Field(row, col);
-   // Fiel
-        //            (tiles[row][col].setItem(item);
-//                g.drawImage(fieldImage, newX, newY, null); // Ensure field image is drawn first
-//                if (item != null) {
-//                    Image itemImage = getItemImage(item);
-//                    if (itemImage != null) {
-//                        g.drawImage(itemImage, newX, newY, null); // Draw item image
-//                        System.out.println("Drawing item at " + newX + ", " + newY);
-//                    }
-//                }
-//                g.drawImage(explosionImage, newX, newY, null);
-//                break;
-//                    }
-//                    g.drawImage(explosionImage, newX, newY, null);
-//                } else {
-//                    break; // Stop the explosion if a wall is encountered
-//                }
-//            }
-//        }
-//    }
-//    
+    }
+
     private void drawExplosion(Graphics g, int x, int y, int dx, int dy, int range) {
     g.drawImage(explosionImage, x, y, null); // Draw the initial explosion at the bomb's location
 
@@ -519,40 +518,28 @@ public class BombermanComponent extends JComponent {
             }
         }
     }
-}
+} 
+    private void shrinkBorders() {
+        for (int row = borderLayer; row < tiles.length - borderLayer; row++) {
+            for (int col = borderLayer; col < tiles[0].length - borderLayer; col++) {
+                if (isBorderTile(row, col)) {
+                    tiles[row][col] = new Field(row, col); // Change border tiles to Field tiles
+                    tiles[row][col].setImage(explosionImage); // Set explosion image for border tiles
+                }
+            }
+        }
+        borderLayer++; // Increment the border layer for the next shrinkage
+    }
+
+    // Method to check if a tile is on the border of the map
+    private boolean isBorderTile(int row, int col) {
+        return row == borderLayer || row == tiles.length - 1 - borderLayer ||
+               col == borderLayer || col == tiles[0].length - 1 - borderLayer;
+    }
+
+
 
     private boolean isValidPosition(int x, int y) {
         return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
     }
-    
-
-
-
 }
-
-//private void drawExplosion(Graphics g, int x, int y, int dx, int dy, int range) {
-//    g.drawImage(explosionImage, x, y, null);  // Draw the central explosion image at the bomb's location
-//
-//    for (int i = 1; i <= range; i++) {
-//        int newX = x + i * SQUARE_SIZE * dx;
-//        int newY = y + i * SQUARE_SIZE * dy;
-//
-//        if (isValidPosition(newX, newY)) {
-//            int col = newX / SQUARE_SIZE;
-//            int row = newY / SQUARE_SIZE;
-//            Tile tile = tiles[row][col];
-//
-//            if (tile instanceof Box) {
-//                Item item = ((Box) tile).destroyAndGetItem();
-//                tiles[row][col] = item != null ? new ItemTile(row, col, item) : new Field(row, col);
-//                g.drawImage(explosionImage, newX, newY, null);
-//                break;  // Stop drawing further explosions if a box is destroyed
-//            } else if (!(tile instanceof Wall)) {
-//                g.drawImage(explosionImage, newX, newY, null);
-//            } else {
-//                break;  // Stop the explosion if a wall is encountered
-//            }
-//        }
-//    }
-//}
-
