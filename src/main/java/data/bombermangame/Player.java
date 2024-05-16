@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -43,12 +44,14 @@ public class Player {
         private boolean forcedBombDrop = false; // New attribute to track if player is forced to drop bombs
         private boolean isGhost = false;
         private int obstacleCount = 0;
+        private ArrayList<Monster> monsters;
 
     // Constructor
-    public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, String imagePath ) {
+    public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, ArrayList<Monster> monsters, String imagePath ) {
         this.name = name;
         this.currentRow = initialRow;
         this.currentCol = initialCol;
+        this.monsters = monsters;
         isAlive = true;
         this.bombermanComponent = bombermanComponent;
         try {
@@ -58,6 +61,10 @@ public class Player {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public Rectangle getBounds() {
+        return new Rectangle(currentCol * SQUARE_SIZE, currentRow * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     }
     
     public int getGamesWon() {
@@ -165,29 +172,34 @@ private void checkIfMovedFromObstacle() {
         int targetRow = currentRow - 1;
         if (targetRow >= 0 && (tiles[targetRow][currentCol].isPassable())||isGhost) {
             currentRow = targetRow;
-            updatePowerUpsAndCurses();
+            updatePowerUpsAndCurses(); // Check for active power-ups and curses
+            if (checkForCollisionWithMonsters()) { // Check for collision with monsters
+                handleMonsterCollision();
+            }
             requestRepaint();
-             if (forcedBombDrop) {
-            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
+            if (forcedBombDrop) {
+                dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
+            }
         }
-        }
-        
-        
-
     }
+    
 int drp=0;
+
     public void moveDown(Tile[][] tiles) {
         if (!isAlive) return;
         int targetRow = currentRow + 1;
         if (targetRow < tiles.length && (tiles[targetRow][currentCol].isPassable())||isGhost) {
             currentRow = targetRow; 
             updatePowerUpsAndCurses();
+            if (checkForCollisionWithMonsters()) { // Check for collision with monsters
+                handleMonsterCollision();
+            }
             requestRepaint(); 
              if (forcedBombDrop) {
-            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
-        }
+                dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
+            }
 
-    }
+        }
     }
 
     public void moveLeft(Tile[][] tiles) {
@@ -196,10 +208,13 @@ int drp=0;
         if (targetCol >= 0 && (tiles[currentRow][targetCol].isPassable())||isGhost) {
             currentCol = targetCol;
             updatePowerUpsAndCurses();
+            if (checkForCollisionWithMonsters()) { // Check for collision with monsters
+                handleMonsterCollision();
+            }
             requestRepaint(); 
               if (forcedBombDrop) {
-            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
-        }
+                dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
+            }
         }
  
     }
@@ -210,14 +225,31 @@ int drp=0;
         if (targetCol < tiles[0].length && (tiles[currentRow][targetCol].isPassable())||isGhost) {
             currentCol = targetCol;
             updatePowerUpsAndCurses();
+            if (checkForCollisionWithMonsters()) { // Check for collision with monsters
+                handleMonsterCollision();
+            }
             requestRepaint(); 
              if (forcedBombDrop) {
-            dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
-        }
+                dropBomb(tiles, BombermanComponent.bombs);  // Use the centralized bomb list for consistency
+            }
              
         }
 
     }
+    
+    public boolean checkForCollisionWithMonsters() {
+        for (Monster monster : monsters) { // Assuming you have access to the monsters list
+            if (monster.currentRow == currentRow && monster.currentCol == currentCol) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void handleMonsterCollision() {
+        isAlive = false;
+    }
+    
    Tile[][] tls;
      public void dropBomb(Tile[][] tiles, ArrayList<Bomb> bombs) {
          this.tls=tiles;

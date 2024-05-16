@@ -1,4 +1,4 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -78,8 +78,8 @@ public class BombermanFrame extends JFrame{
         // Load Map 
         Tile[][] tiles = bombermanComponent.loadMapFromFile("MapONE.txt"); 
 
-        players.add(new Player("Abdelhamid", 3, 3, bombermanComponent, "assets/players/bombermanfrontgreen.png")); 
-        players.add(new Player("Thet", 11,11, bombermanComponent, "assets/players/bombermanfrontgreen.png"));
+        players.add(new Player("Abdelhamid", 3, 3, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
+        players.add(new Player("Thet", 11,11, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png"));
 
         monsters.add(new Monster(tiles, 9, 9, players, "assets/monsters/ghostfrontgreen.png")); 
         System.out.println("Monster created!");
@@ -120,14 +120,17 @@ public class BombermanFrame extends JFrame{
         return true; // All players are dead
     }
         
-        private void checkGameStatus() {
-            for (Player player : players) {
-                if (!player.isAlive) {
+    private void checkGameStatus() {
+        for (Player player : players) {
+            for (Monster monster : monsters) {
+                if (player.getBounds().intersects(monster.getBounds())) {
+                    player.isAlive = false;
                     determineRoundWinner();
                     break;
                 }
             }
         }
+    }
 
     private void determineRoundWinner() {
         Player winner = null;
@@ -148,13 +151,13 @@ public class BombermanFrame extends JFrame{
         if (winner.gamesWon == 3) {
             // The player has won the game
             String message = "Game Winner: " + winner.getName() + 
-                             "\nGames Won: " + winner.getGamesWon(); // Include total game wins
+                             "\nRounds Won: " + winner.getGamesWon(); // Include total game wins
             isRoundOver = true;
             handleGameEnd(winner, message);
         } else {
             // The player has won the round but not the game
             String message = "Round Winner: " + winner.getName() + 
-                             "\nGames Won: " + winner.getGamesWon(); // Include current game wins
+                             "\nRounds Won: " + winner.getGamesWon(); // Include current game wins
             isRoundOver = true;
             new java.util.Timer().schedule( 
                 new java.util.TimerTask() {
@@ -183,6 +186,7 @@ public class BombermanFrame extends JFrame{
         );
     }
     }
+    
     
     private void handleGameEnd(Player winner, String message) {
         new java.util.Timer().schedule( 

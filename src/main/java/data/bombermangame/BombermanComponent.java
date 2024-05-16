@@ -398,11 +398,13 @@ public class BombermanComponent extends JComponent {
             // Draw all players 
         for (Player player : players) {
             if (player.isAlive) {
+                checkPowerUpCollision(player);
                 int playerX = player.currentCol * SQUARE_SIZE;
                 int playerY = player.currentRow * SQUARE_SIZE;
                 // Check if the player is on a tile with an explosion image
                 if (tiles[player.currentRow][player.currentCol].getImage() == explosionImage) {
                     // Player dies if on an explosion tile
+                    
                     player.isAlive = false;
                     // You may want to perform additional actions here, such as removing the player from the game
                 } else {

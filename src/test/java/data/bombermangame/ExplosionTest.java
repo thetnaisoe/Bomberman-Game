@@ -23,6 +23,7 @@ public class ExplosionTest {
     private Monster monster;
     BombermanComponent bombermanComponent;
     private ArrayList<Player> players;
+    private ArrayList<Monster> monsters;
 
     @BeforeEach
     void setUp() {
@@ -42,9 +43,11 @@ public class ExplosionTest {
         tiles[2][1] = new Box(2, 1);
 
         players = new ArrayList<>();
-        players.add(new Player("TestPlayer", 1, 0, bombermanComponent, "path/to/image")); 
-        player = new Player("TestPlayer", 1, 0, bombermanComponent, "path/to/image");
-        monster = new Monster(tiles, 0, 0, players, "path/to/image"); 
+        monsters = new ArrayList<>();
+        players.add(new Player("TestPlayer", 1, 0, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
+        player = new Player("TestPlayer", 1, 0, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png");
+        monsters.add(monster); 
+        monster = new Monster(tiles, 0, 0, players, "assets/monsters/ghostfrontgreen.png"); 
 
     }
     
