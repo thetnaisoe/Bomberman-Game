@@ -42,9 +42,9 @@ public class ExplosionTest {
         tiles[2][1] = new Box(2, 1);
 
         players = new ArrayList<>();
-        players.add(new Player("TestPlayer", 1, 0, bombermanComponent, "path/to/image")); 
-        player = new Player("TestPlayer", 1, 0, bombermanComponent, "path/to/image");
-        monster = new Monster(tiles, 0, 0, players, "path/to/image"); 
+        players.add(new Player("TestPlayer", 1, 0, bombermanComponent, "assets/players/bombermanfrontgreen.png")); 
+        player = new Player("TestPlayer", 1, 0, bombermanComponent, "assets/players/bombermanfrontgreen.png");
+        monster = new Monster(tiles, 0, 0, players, "assets/monsters/ghostfrontgreen.png"); 
 
     }
     
