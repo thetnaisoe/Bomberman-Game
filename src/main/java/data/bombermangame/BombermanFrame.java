@@ -92,6 +92,8 @@ public class BombermanFrame extends JFrame{
         bombermanComponent.setPlayers(players); 
         bombermanComponent.setMonsters(monsters);
         bombermanComponent.setupKeyListeners(bombermanComponent);
+        bombermanComponent.borderLayer = 0;
+        bombermanComponent.countdownTimeInSeconds  = 90;
     }
     
     public BombermanComponent getBombermanComponent() {
