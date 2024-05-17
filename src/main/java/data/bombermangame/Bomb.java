@@ -52,18 +52,19 @@ public class Bomb {
     // Method to detonate the bomb
     public void detonate(Tile[][] tiles,int Range) {
         // Detonate the bomb after a 2-second delay
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
+       // Timer timer = new Timer();
+        //timer.schedule(new TimerTask() {
+        //    @Override
+          //  public void run() {
                 // Detonate the bomb
+                
                 exploded = true;
                 System.out.println("booom");
                 // Create explosions and apply effects
                 Explosion explosion = new Explosion(row, col, Range);
                 explosion.detonate(tiles);
-            }
-        }, 2000); // 2000 milliseconds = 2 seconds
+         //   }
+       // }, 2000); // 2000 milliseconds = 2 seconds
     }
     
     public int getExplosionRadius() {
