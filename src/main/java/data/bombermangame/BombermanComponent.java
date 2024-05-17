@@ -544,4 +544,15 @@ public class BombermanComponent extends JComponent {
     private boolean isValidPosition(int x, int y) {
         return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
     }
+    
+    public boolean isPlayerInExplosion(Player player) {
+        int playerX = player.currentCol * SQUARE_SIZE;
+        int playerY = player.currentRow * SQUARE_SIZE;
+        // Check if the player is on a tile with an explosion image
+        if (tiles[player.currentRow][player.currentCol].getImage() == explosionImage) {
+            // Player is on an explosion tile
+            return true;
+        }
+        return false;
+    }
 }

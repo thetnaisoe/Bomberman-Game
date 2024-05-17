@@ -122,12 +122,25 @@ public class BombermanFrame extends JFrame{
         
     private void checkGameStatus() {
         for (Player player : players) {
+            // Check if player is already dead
+            if (!player.isAlive) {
+                determineRoundWinner();
+                break;
+            }
+
+            // Check for collision with monsters
             for (Monster monster : monsters) {
                 if (player.getBounds().intersects(monster.getBounds())) {
                     player.isAlive = false;
                     determineRoundWinner();
                     break;
                 }
+            }
+
+            if (bombermanComponent.isPlayerInExplosion(player)) {
+                player.isAlive = false;
+                determineRoundWinner();
+                break;
             }
         }
     }
@@ -167,7 +180,7 @@ public class BombermanFrame extends JFrame{
                         resetGame();
                     }
                 }, 
-                500 // Delay in milliseconds
+                200 // Delay in milliseconds
             );
         }
             } else if (allPlayersDead()) {
@@ -182,7 +195,7 @@ public class BombermanFrame extends JFrame{
                     resetGame();
                 }
             }, 
-            500 // Delay in milliseconds
+            200 // Delay in milliseconds
         );
     }
     }
