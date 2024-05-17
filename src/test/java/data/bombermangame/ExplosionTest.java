@@ -5,6 +5,7 @@
 package data.bombermangame;
 
 import java.util.ArrayList;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ public class ExplosionTest {
     BombermanComponent bombermanComponent;
     private ArrayList<Player> players;
     private ArrayList<Monster> monsters;
+    Map<String, Integer> keyBindings;
 
     @BeforeEach
     void setUp() {
@@ -44,7 +46,7 @@ public class ExplosionTest {
 
         players = new ArrayList<>();
         monsters = new ArrayList<>();
-        player = new Player("TestPlayer", 2, 1, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png"); // Set the player's position to be within the blast radius
+        player = new Player("TestPlayer", 2, 1, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindings); // Set the player's position to be within the blast radius
         players.add(player);
         monster = new Monster(tiles, 1, 0, players, "assets/monsters/ghostfrontgreen.png"); // Set the monster's position to be within the blast radius
         monsters.add(monster);

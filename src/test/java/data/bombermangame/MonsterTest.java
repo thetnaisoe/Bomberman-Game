@@ -23,6 +23,7 @@ public class MonsterTest {
     private ArrayList<Player> players;
     private ArrayList<Monster> monsters;
     BombermanComponent bombermanComponent;
+    Map<String, Integer> keyBindings;
 
     @BeforeEach
     public void setUp() {
@@ -35,7 +36,7 @@ public class MonsterTest {
         }
         players = new ArrayList<>();
         monsters = new ArrayList<>();
-        players.add(new Player("TestPlayer", 5, 5, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
+        players.add(new Player("TestPlayer", 5, 5, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindings)); 
         monster = new Monster(tiles, 0, 0, players, "assets/monsters/ghostfrontgreen.png"); 
         monsters.add(monster);
     }
