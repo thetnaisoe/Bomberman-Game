@@ -40,34 +40,45 @@ public class ExplosionTest {
 
         // Add a wall and a box to the tiles array
         tiles[1][2] = new Wall(1,2);
-        tiles[2][1] = new Box(2, 1);
+        //tiles[2][1] = new Box(2, 1);
 
         players = new ArrayList<>();
         monsters = new ArrayList<>();
-        players.add(new Player("TestPlayer", 1, 0, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
-        player = new Player("TestPlayer", 1, 0, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png");
-        monsters.add(monster); 
-        monster = new Monster(tiles, 0, 0, players, "assets/monsters/ghostfrontgreen.png"); 
+        player = new Player("TestPlayer", 2, 1, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png"); // Set the player's position to be within the blast radius
+        players.add(player);
+        monster = new Monster(tiles, 1, 0, players, "assets/monsters/ghostfrontgreen.png"); // Set the monster's position to be within the blast radius
+        monsters.add(monster);
 
+        // Set the players and monsters lists in the BombermanComponent class
+        bombermanComponent.players = players;
+        bombermanComponent.monsters = monsters;
     }
     
     @Test
     void testBlastRadius() {
         assertEquals(2, explosion.getBlastRadius());
     }
-
+    
     @Test
-    void testDetonate() {
+    void testPlayerAffectedByExplosion() {
         explosion.detonate(tiles);
 
-        //Check that the tiles around the explosion have been affected
-        assertTrue(tiles[1][0] instanceof Field); // The player's tile should be empty
-        assertTrue(tiles[1][2] instanceof Wall); // The wall should still be there
-        //assertTrue(tiles[2][1] instanceof Field); // The box should have been replaced with an empty tile
+        assertFalse(player.isAlive); // The player should be dead
+    }
 
-        //Check that the player and monster have been affected
-        //assertFalse(player.isAlive); // The player should be dead
-        assertTrue(monster.isAlive); // The monster should still be alive
+    @Test
+    void testMonsterAffectedByExplosion() {
+        explosion.detonate(tiles);
+
+        assertFalse(monster.isAlive); // The monster should be dead
+    }
+    
+    @Test
+    void testWallNotAffectedByExplosion() {
+        explosion.detonate(tiles);
+
+        // Check that the wall has not been affected
+        assertTrue(tiles[1][2] instanceof Wall); // The wall should still be there
     }
 
     
