@@ -21,7 +21,9 @@ import java.util.*;
  */
 public class BombermanFrame extends JFrame{
     
-    private BombermanComponent bombermanComponent;
+    private static BombermanComponent bombermanComponent;
+    private Map<String, Integer>keyBindingsPlayer1;
+    private Map<String, Integer>keyBindingsPlayer2;
     public Tile[][] tiles;
     public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Monster> monsters = new ArrayList<>();
@@ -37,7 +39,9 @@ public class BombermanFrame extends JFrame{
         setupGame();
         this.setVisible(true);
         bombermanComponent.requestFocusInWindow(); 
-        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);   
+        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);  
+        this.setLocationRelativeTo(null); // Center the frame
+       // bombermanComponent.requestFocusInWindow(); // Request focus for key events
         this.pack();
         
         int delay = 500; // Update delay in milliseconds (e.g., 100ms for 10 updates per second) 
@@ -57,6 +61,15 @@ public class BombermanFrame extends JFrame{
         });
 
     }
+    //  private static BombermanComponent bombermanComponent;
+
+    public static void setBombermanComponent(BombermanComponent comp) {
+        bombermanComponent = comp;
+    }
+
+    public static BombermanComponent getBombermanComponent() {
+        return bombermanComponent;
+    }
     
     private void updateGame() {
         // Update player positions (if you have movement logic outside of key presses)
@@ -74,13 +87,23 @@ public class BombermanFrame extends JFrame{
          }
     }
     
-    private void setupGame() {
+    public void setupGame() {
         // Load Map 
         Tile[][] tiles = bombermanComponent.loadMapFromFile("MapONE.txt"); 
 
-        players.add(new Player("Abdelhamid", 3, 3, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
-        players.add(new Player("Thet", 11,11, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png"));
-
+//<<<<<<< HEAD
+//        players.add(new Player("Abdelhamid", 3, 3, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
+//        players.add(new Player("Thet", 11,11, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png"));
+//=======
+        if (players.isEmpty()) {
+        players.add(new Player("Abdelhamid", 1, 1, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer1));
+        players.add(new Player("Thet", 10, 10, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer2));
+    } else {
+        players.get(0).setCurrentRow(2); // Reset position for Player 1
+        players.get(0).setCurrentCol(1);
+        players.get(1).setCurrentRow(11); // Reset position for Player 2
+        players.get(1).setCurrentCol(10);
+    }
         monsters.add(new Monster(tiles, 9, 9, players, "assets/monsters/ghostfrontgreen.png")); 
         System.out.println("Monster created!");
         monsters.add(new Monster(tiles, 5, 5, players, "assets/monsters/ghostfrontgreen.png"));
@@ -91,15 +114,36 @@ public class BombermanFrame extends JFrame{
         bombermanComponent.setTiles(tiles);
         bombermanComponent.setPlayers(players); 
         bombermanComponent.setMonsters(monsters);
-        bombermanComponent.setupKeyListeners(bombermanComponent);
+        bombermanComponent.setupKeyListeners();
         bombermanComponent.borderLayer = 0;
         bombermanComponent.countdownTimeInSeconds  = 90;
     }
     
-    public BombermanComponent getBombermanComponent() {
-	return bombermanComponent;
-    }
+    public void inisetKeyBtializeGame() {
+    setupGame();
+}
+    
+        public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2) {
+        this.keyBindingsPlayer1 = keyBindingsPlayer1;
+        this.keyBindingsPlayer2 = keyBindingsPlayer2;
+
+       // BombermanComponent bombermanComponent = new BombermanComponent();
+         bombermanComponent.setKeyBindings(keyBindingsPlayer1, keyBindingsPlayer2); // Pass key bindings to the component
+        bombermanComponent.setupKeyListeners(); // Setup key listeners with new bindings
         
+        // Initialize players with default images and positions
+       // ArrayList<Player> players = new ArrayList<>();
+       // players.add(new Player("Player1", 0, 0, bombermanComponent, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer1));
+       // players.add(new Player("Player2", 10, 10, bombermanComponent, "assets/bombermanfrontgreen.png", keyBindingsPlayer2));
+
+        bombermanComponent.setPlayers(players);
+        //bombermanComponent.setTiles(/* Your method to load the map */);
+
+        add(bombermanComponent);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+    
     private void showExitConfirmation(){
         int n = JOptionPane.showConfirmDialog(this, "Do you really want to quit?", "Really", JOptionPane.YES_NO_OPTION);
         if(n == JOptionPane.YES_OPTION){
@@ -223,7 +267,8 @@ public class BombermanFrame extends JFrame{
         }
 
         // Clear the players and monsters
-        players.clear();
+    //
+    players.clear();
         monsters.clear();
 
         // Setup the game again
@@ -236,10 +281,23 @@ public class BombermanFrame extends JFrame{
                 player.setGamesWon(gamesWon);
             }
         }
-
+         resetPlayerPositions();
         isRoundOver = false;
     }
     
+    private void resetPlayerPositions() {
+    for (int i = 0; i < players.size(); i++) {
+        Player player = players.get(i);
+        if (i == 0) {
+            player.setCurrentRow(1); // Reset position for Player 1
+            player.setCurrentCol(1);
+        } else if (i == 1) {
+            player.setCurrentRow(1); // Reset position for Player 2
+            player.setCurrentCol(10);
+        }
+        // Add more conditions if there are more players
+    }
+}
     private void displayGameResult(String message) {
         JOptionPane.showMessageDialog(this, message); 
      }

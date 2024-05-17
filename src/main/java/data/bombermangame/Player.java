@@ -21,6 +21,7 @@ import javax.swing.Timer;
  * @author DATA
  */
 public class Player {
+     private int upKey, downKey, leftKey, rightKey, bombKey, obstacleKey;
     public String name;
     public int currentRow;
     public int currentCol;
@@ -44,10 +45,18 @@ public class Player {
         private boolean forcedBombDrop = false; // New attribute to track if player is forced to drop bombs
         private boolean isGhost = false;
         private int obstacleCount = 0;
+//<<<<<<< HEAD
         private ArrayList<Monster> monsters;
 
     // Constructor
-    public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, ArrayList<Monster> monsters, String imagePath ) {
+//    public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, ArrayList<Monster> monsters, String imagePath ) {
+//=======
+         private Map<String, Integer> keyBindings;
+
+    // Constructor
+    public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, ArrayList<Monster> monsters, String imagePath,Map<String, Integer> keyBindings ) {
+        this.keyBindings = keyBindings;
+
         this.name = name;
         this.currentRow = initialRow;
         this.currentCol = initialCol;
@@ -74,6 +83,9 @@ public class Player {
     public void setGamesWon(int gamesWon) {
         this.gamesWon = gamesWon;
     }
+    public Map<String, Integer> getKeyBindings() {
+            return keyBindings;
+        }
     
     public String getName(){
         return name;
@@ -311,6 +323,21 @@ public void updatePowerUps() {
         }
     }
 }
+ public void setCurrentRow(int row) {
+        this.currentRow = row;
+    }
+
+    public void setCurrentCol(int col) {
+        this.currentCol = col;
+    }
+
+    public int getCurrentRow() {
+        return currentRow;
+    }
+
+    public int getCurrentCol() {
+        return currentCol;
+    }
  public void updateCurses() {
         long currentTime = System.currentTimeMillis();
         Iterator<Map.Entry<Curse, Long>> iterator = activeCurses.entrySet().iterator();
@@ -340,5 +367,30 @@ public void updatePowerUps() {
     public Image getPlayerImage() {
         return playerImage;
     }
+    
+    
+    // Up
+    public int getUpKey() { return upKey; }
+    public void setUpKey(int key) { this.upKey = key; }
+
+    // Down
+    public int getDownKey() { return downKey; }
+    public void setDownKey(int key) { this.downKey = key; }
+
+    // Left
+    public int getLeftKey() { return leftKey; }
+    public void setLeftKey(int key) { this.leftKey = key; }
+
+    // Right
+    public int getRightKey() { return rightKey; }
+    public void setRightKey(int key) { this.rightKey = key; }
+
+    // Drop Bomb
+    public int getBombKey() { return bombKey; }
+    public void setBombKey(int key) { this.bombKey = key; }
+
+    // Place Obstacle
+    public int getObstacleKey() { return obstacleKey; }
+    public void setObstacleKey(int key) { this.obstacleKey = key; }
 }
 

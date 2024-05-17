@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Image; 
+import java.awt.event.KeyListener;
 import javax.swing.Timer;
 
 /**
@@ -23,6 +24,8 @@ import javax.swing.Timer;
  * @author ThetNaingSoe
  */
 public class BombermanComponent extends JComponent {
+     private Map<String, Integer> keyBindingsPlayer1;
+    private Map<String, Integer> keyBindingsPlayer2;
 
     public int countdownTimeInSeconds = 90; // Example countdown time
     private Timer countdownTimer;
@@ -145,7 +148,74 @@ public class BombermanComponent extends JComponent {
         } catch (IOException e) {
             e.printStackTrace();
         }
+          keyBindingsPlayer1 = loadKeyBindingsPlayer1();
+        keyBindingsPlayer2 = loadKeyBindingsPlayer2();
+        //setupKeyListeners();
+        setFocusable(true);
+        
+         File file1 = new File("keybindings1.dat");
+    File file2 = new File("keybindings2.dat");
+
+    if (!file1.exists()) {
+        saveDefaultKeyBindings("keybindings1.dat", getDefaultKeyBindingsPlayer1());
     }
+    if (!file2.exists()) {
+        saveDefaultKeyBindings("keybindings2.dat", getDefaultKeyBindingsPlayer2());
+    }
+
+        
+    }
+    private void saveDefaultKeyBindings(String filename, Map<String, Integer> defaultBindings) {
+    try (FileOutputStream fos = new FileOutputStream(filename);
+         ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+        oos.writeObject(defaultBindings);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+    
+   @SuppressWarnings("unchecked")
+    private Map<String, Integer>loadKeyBindingsPlayer1() {
+        return loadKeyBindingsFromFile("keybindings1.dat", getDefaultKeyBindingsPlayer1());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Integer> loadKeyBindingsPlayer2() {
+        return loadKeyBindingsFromFile("keybindings2.dat", getDefaultKeyBindingsPlayer2());
+    }
+
+    private Map<String, Integer> loadKeyBindingsFromFile(String filename, Map<String, Integer> defaultBindings) {
+        try (FileInputStream fis = new FileInputStream(filename);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            return (Map<String, Integer>) ois.readObject();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return defaultBindings;
+        }
+    }
+
+    private Map<String, Integer> getDefaultKeyBindingsPlayer1() {
+        Map<String, Integer> defaultBindings = new HashMap<>();
+        defaultBindings.put("UP", KeyEvent.VK_W);
+        defaultBindings.put("DOWN", KeyEvent.VK_S);
+        defaultBindings.put("LEFT", KeyEvent.VK_A);
+        defaultBindings.put("RIGHT", KeyEvent.VK_D);
+        defaultBindings.put("BOMB", KeyEvent.VK_SPACE);
+        defaultBindings.put("OBSTACLE", KeyEvent.VK_O);
+        return defaultBindings;
+    }
+
+    private Map<String, Integer> getDefaultKeyBindingsPlayer2() {
+        Map<String, Integer> defaultBindings = new HashMap<>();
+        defaultBindings.put("UP", KeyEvent.VK_UP);
+        defaultBindings.put("DOWN", KeyEvent.VK_DOWN);
+        defaultBindings.put("LEFT", KeyEvent.VK_LEFT);
+        defaultBindings.put("RIGHT", KeyEvent.VK_RIGHT);
+        defaultBindings.put("BOMB", KeyEvent.VK_ENTER);
+        defaultBindings.put("OBSTACLE", KeyEvent.VK_L);
+        return defaultBindings;
+    }
+    
     
     public void setTiles(Tile[][] tiles) {
         this.tiles = tiles;
@@ -153,6 +223,7 @@ public class BombermanComponent extends JComponent {
 
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
+        
     }
     
     public void setMonsters(ArrayList<Monster> monsters) {
@@ -196,16 +267,46 @@ public class BombermanComponent extends JComponent {
     }
 
     
-    public void setupKeyListeners(JComponent component) {
-    // Example key assignments
-    addPlayerKeys(players.get(0), KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_SPACE, KeyEvent.VK_O);  
-    addPlayerKeys(players.get(1), KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SHIFT, KeyEvent.VK_L); 
+public void setupKeyListeners() {
+    // Remove existing key listeners to avoid duplicates
+    for (KeyListener listener : getKeyListeners()) {
+        removeKeyListener(listener);
+    }
 
-    // Create key listeners
+    // Add key listeners for each player
+    for (int i = 0; i < players.size(); i++) {
+        Player player = players.get(i);
+        addKeyListener(createKeyListenerForPlayer(player, i));
+    }
+    setFocusable(true); // Ensure the component can gain focus
+}
+public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2) {
+        this.keyBindingsPlayer1 = keyBindingsPlayer1;
+        this.keyBindingsPlayer2 = keyBindingsPlayer2;
+    }
+
+
+    
+    // Method to update key bindings for a player
+public void updatePlayerKeys(Player player, int upKey, int downKey, int leftKey, int rightKey, int bombKey, int obstacleKey) {
+    HashSet<Integer> keySet = new HashSet<>();
+    keySet.add(upKey);
+    keySet.add(downKey);
+    keySet.add(leftKey);
+    keySet.add(rightKey);
+    keySet.add(bombKey);
+    keySet.add(obstacleKey);
+    playerKeyMap.put(player, keySet); // Store the keys in a map where Player is the key
+}
+
+// Call this method when initializing or when key settings change
+public void setupPlayerControls() {
     for (Player player : players) {
-        component.addKeyListener(createKeyListenerForPlayer(player));
+        // Assume default keys or retrieve them from player preferences
+        updatePlayerKeys(player, player.getUpKey(), player.getDownKey(), player.getLeftKey(), player.getRightKey(), player.getBombKey(), player.getObstacleKey());
     }
 }
+
 
     private void addPlayerKeys(Player player, int upKey, int downKey, int leftKey, int rightKey, int bombKey, int obstacleKey) {
         HashSet<Integer> keySet = new HashSet<>();
@@ -217,78 +318,67 @@ public class BombermanComponent extends JComponent {
         keySet.add(obstacleKey);
         playerKeyMap.put(player, keySet);
     }
-
-    private KeyAdapter createKeyListenerForPlayer(Player player) {
+/*private KeyAdapter createKeyListenerForPlayer(Player player) {
     return new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent e) {
-            if (playerKeyMap.get(player).contains(e.getKeyCode())) { // Check for valid key
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                        player.moveUp(tiles);
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        player.moveDown(tiles);
-                        break;
-                    case KeyEvent.VK_LEFT:
-                        player.moveLeft(tiles);
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        player.moveRight(tiles);
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        if (player == players.get(0)) { // Check if Player 1
-                            // Drop bomb for Player 1
-                            player.dropBomb(tiles, bombs);
-                        }
-                        break;
-                    case KeyEvent.VK_W:
-                        if (player == players.get(1)) { // Check if Player 2
-                            // Move up for Player 2
-                            player.moveUp(tiles);
-                        }
-                        break;
-                    case KeyEvent.VK_S:
-                        if (player == players.get(1)) { // Check if Player 2
-                            // Move down for Player 2
-                            player.moveDown(tiles);
-                        }
-                        break;
-                    case KeyEvent.VK_A:
-                        if (player == players.get(1)) { // Check if Player 2
-                            // Move left for Player 2
-                            player.moveLeft(tiles);
-                        }
-                        break;
-                    case KeyEvent.VK_D:
-                        if (player == players.get(1)) { // Check if Player 2
-                            // Move right for Player 2
-                            player.moveRight(tiles);
-                        }
-                        break;
-                         case KeyEvent.VK_O: // Assuming Player 1 uses 'O' to place obstacle
-                        if (player == players.get(0)) {
-                            player.placeObstacle(tiles);
-                        }
-                        break;
-                    case KeyEvent.VK_L: // Assuming Player 2 uses 'L' to place obstacle
-                        if (player == players.get(1)) {
-                            player.placeObstacle(tiles);
-                        }
-                        break;
-                    case KeyEvent.VK_SHIFT:
-                        if (player == players.get(1)) { // Check if Player 2
-                            // Drop bomb for Player 2
-                            player.dropBomb(tiles, bombs);
-                        }
-                    break;
-                    }
-                
-
-                }
+            if (playerKeyMap.get(player).contains(e.getKeyCode())) {
+                handlePlayerAction(player, e.getKeyCode());
             }
-        };
+        }
+    };
+}
+
+private void handlePlayerAction(Player player, int keyCode) {
+    if (keyCode == player.getUpKey()) {
+        player.moveUp(tiles);
+    } else if (keyCode == player.getDownKey()) {
+        player.moveDown(tiles);
+    } else if (keyCode == player.getLeftKey()) {
+        player.moveLeft(tiles);
+    } else if (keyCode == player.getRightKey()) {
+        player.moveRight(tiles);
+    } else if (keyCode == player.getBombKey()) {
+        player.dropBomb(tiles, bombs);
+    } else if (keyCode == player.getObstacleKey()) {
+        player.placeObstacle(tiles);
     }
+}
+*/
+private KeyAdapter createKeyListenerForPlayer(Player player, int playerIndex) {
+    return new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            Map<String, Integer> keyBindings = (playerIndex == 0) ? keyBindingsPlayer1 : keyBindingsPlayer2;
+            int keyCode = e.getKeyCode();
+
+            if (keyBindings != null && keyBindings.containsValue(keyCode)) {
+                if (keyCode == keyBindings.get("UP")) {
+                    player.moveUp(tiles);
+                } else if (keyCode == keyBindings.get("DOWN")) {
+                    player.moveDown(tiles);
+                } else if (keyCode == keyBindings.get("LEFT")) {
+                    player.moveLeft(tiles);
+                } else if (keyCode == keyBindings.get("RIGHT")) {
+                    player.moveRight(tiles);
+                } else if (keyCode == keyBindings.get("BOMB")) {
+                    player.dropBomb(tiles, bombs);
+                } else if (keyCode == keyBindings.get("OBSTACLE")) {
+                    player.placeObstacle(tiles);
+                }
+                repaint(); // Repaint the component to reflect the movement
+            }
+        }
+    };
+}
+
+// Example of how to add the key listener to players
+public void initializePlayers() {
+    for (int i = 0; i < players.size(); i++) {
+        Player player = players.get(i);
+        addKeyListener(createKeyListenerForPlayer(player, i));
+    }
+}
 
     @Override
     public Dimension getPreferredSize() {
