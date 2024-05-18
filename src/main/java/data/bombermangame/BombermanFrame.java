@@ -22,44 +22,122 @@ import java.util.*;
 public class BombermanFrame extends JFrame{
     
     private static BombermanComponent bombermanComponent;
+    private AvatarComponents avatarComponents; 
+    
     private Map<String, Integer>keyBindingsPlayer1;
     private Map<String, Integer>keyBindingsPlayer2;
+     private Map<String, Integer>keyBindingsPlayer3;
+    
+    private GameTimer gameTimer;
+
     public Tile[][] tiles;
     public static ArrayList<Player> players = new ArrayList<>();
     public static ArrayList<Monster> monsters = new ArrayList<>();
     private boolean isRoundOver = false;
+    
+    int numberOfPlayers = SelectPlayersGUI.numberOfPlayers;
+
+    JLabel timer, scoreLabel1, scoreLabel2, scoreLabel3;
     
     public BombermanFrame() throws HeadlessException{
         
         this.setTitle("BombermanGame");
         bombermanComponent = new BombermanComponent();
 
-        this.setLayout(new BorderLayout());
-        this.add(bombermanComponent, BorderLayout.CENTER);
+        avatarComponents = new AvatarComponents();
+
+        gameTimer = new GameTimer();
+        gameTimer.start(); // Start the timer
+
+        timer = new JLabel("Time: " + gameTimer.getFormattedTime());
+        timer.setPreferredSize(new Dimension(150, 50)); // Adjust width and height as needed
+        timer.setFont(timer.getFont().deriveFont(Font.BOLD, 18)); // Adjust the font size as needed
+
+        // Call setupGame() to populate players list
         setupGame();
+
+        this.setLayout(new BorderLayout());
+
+        // Create a panel to hold the images
+        JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
+
+
+        // Add images to the panel based on the number of players
+        if (numberOfPlayers >= 2) {
+
+            ImageIcon image1 = new ImageIcon(avatarComponents.getImage1());
+            ImageIcon image2 = new ImageIcon(avatarComponents.getImage2());
+            JLabel label1 = new JLabel(image1);
+            JLabel label2 = new JLabel(image2);
+
+            // Add score labels next to the avatars
+
+
+
+            scoreLabel1 = new JLabel("Score: " + players.get(0).getGamesWon());
+            scoreLabel2 = new JLabel("Score: " + players.get(1).getGamesWon());
+
+
+            imagePanel.add(timer);
+            imagePanel.add(label1);
+            imagePanel.add(scoreLabel1);
+            imagePanel.add(label2);
+            imagePanel.add(scoreLabel2);
+        }
+        if (numberOfPlayers >= 3) {
+            ImageIcon image3 = new ImageIcon(avatarComponents.getImage3());
+            JLabel label3 = new JLabel(image3);
+
+            // Add score label next to the avatar
+            scoreLabel3 = new JLabel("Score: " + players.get(2).getGamesWon());
+
+            imagePanel.add(label3);
+            imagePanel.add(scoreLabel3);
+        }
+
+
+        // Add the image panel to the top of the frame
+        this.add(imagePanel, BorderLayout.NORTH);
+
+        this.add(bombermanComponent, BorderLayout.CENTER);
         this.setVisible(true);
-        bombermanComponent.requestFocusInWindow(); 
-        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);  
-        this.setLocationRelativeTo(null); // Center the frame
-       // bombermanComponent.requestFocusInWindow(); // Request focus for key events
-        this.pack();
-        
-        int delay = 500; // Update delay in milliseconds (e.g., 100ms for 10 updates per second) 
+        bombermanComponent.requestFocusInWindow();
+        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        // Set the initial size of the frame
+        this.setSize(760, 850);
+        this.setResizable(false);
+
+        int delay = 500;
         ActionListener taskPerformer = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                updateGame(); // Call your update logic aka game loop
+                updateGame();
             }
         };
         new Timer(delay, taskPerformer).start();
-        
-        addWindowListener(new WindowAdapter(){
-            
+
+        addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e){
+            public void windowClosing(WindowEvent e) {
                 showExitConfirmation();
             }
         });
+    }
+    
+    private void updateTimerLabel() {
+        timer.setText("Time: " + gameTimer.getFormattedTime());
+    }
+    private void updateScoreLabels() {
 
+        if (numberOfPlayers == 2){
+            scoreLabel1.setText("Score: " + players.get(0).getGamesWon());
+            scoreLabel2.setText("Score: " + players.get(1).getGamesWon());
+        }
+        else if (numberOfPlayers == 3) {
+            scoreLabel1.setText("Score: " + players.get(0).getGamesWon());
+            scoreLabel2.setText("Score: " + players.get(1).getGamesWon());
+            scoreLabel3.setText("Score: " + players.get(2).getGamesWon());
+        }
     }
     //  private static BombermanComponent bombermanComponent;
 
@@ -73,18 +151,29 @@ public class BombermanFrame extends JFrame{
     
     private void updateGame() {
         // Update player positions (if you have movement logic outside of key presses)
-
         for (Monster monster : monsters) {
-            monster.moveToRandomDirection();  
+            monster.moveToRandomDirection();
         }
         if (!isRoundOver) {
             checkGameStatus();
         }
-        repaint(); // Trigger a repaint to reflect changes 
-         bombermanComponent.repaint(); 
+        updateTimerLabel(); // Update the timer label
+        repaint(); // Trigger a repaint to reflect changes
+         bombermanComponent.repaint();
          for(Player p :players){
              p.updatePowerUpsAndCurses();
          }
+
+        for (Player player : players) {
+            if (player.getGamesWon() == 3) {
+                String message = "Game Winner: " + player.getName() +
+                        "\nGames Won: " + player.getGamesWon() +
+                        "\nGames Time: " + gameTimer.getFormattedTime();
+                displayGameResult(message);
+                doUponExit();
+                return; // Exit the method early if game winner is found
+            }
+        }
     }
     
     public void setupGame() {
@@ -95,15 +184,18 @@ public class BombermanFrame extends JFrame{
 //        players.add(new Player("Abdelhamid", 3, 3, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png")); 
 //        players.add(new Player("Thet", 11,11, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png"));
 //=======
-        if (players.isEmpty()) {
-        players.add(new Player("Abdelhamid", 1, 1, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer1));
-        players.add(new Player("Thet", 10, 10, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer2));
-    } else {
-        players.get(0).setCurrentRow(2); // Reset position for Player 1
-        players.get(0).setCurrentCol(1);
-        players.get(1).setCurrentRow(11); // Reset position for Player 2
-        players.get(1).setCurrentCol(10);
-    }
+    if (numberOfPlayers == 2){
+            players.add(new Player(NamePlayersGUI.allNames.get(0), 3, 3, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer1));
+            players.add(new Player(NamePlayersGUI.allNames.get(1), 11, 11, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer2));
+            players.add(new Player(NamePlayersGUI.allNames.get(1), 5, 13, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer3));
+        }//    public Player(String name, int initialRow, int initialCol, BombermanComponent bombermanComponent, ArrayList<Monster> monsters, String imagePath,Map<String, Integer> keyBindings ) {
+
+        else if (numberOfPlayers == 3) {
+            players.add(new Player(NamePlayersGUI.allNames.get(0), 3, 3, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer1));
+            players.add(new Player(NamePlayersGUI.allNames.get(1), 11, 11, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer2));
+            players.add(new Player(NamePlayersGUI.allNames.get(2), 5, 13, bombermanComponent, monsters, "assets/players/bombermanfrontgreen.png", keyBindingsPlayer3));
+        }
+
         monsters.add(new Monster(tiles, 9, 9, players, "assets/monsters/ghostfrontgreen.png")); 
         System.out.println("Monster created!");
         monsters.add(new Monster(tiles, 5, 5, players, "assets/monsters/ghostfrontgreen.png"));
@@ -123,12 +215,14 @@ public class BombermanFrame extends JFrame{
     setupGame();
 }
     
-        public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2) {
+        public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2, Map<String, Integer> keyBindingsPlayer3) {
         this.keyBindingsPlayer1 = keyBindingsPlayer1;
         this.keyBindingsPlayer2 = keyBindingsPlayer2;
+        this.keyBindingsPlayer3 = keyBindingsPlayer3;
+
 
        // BombermanComponent bombermanComponent = new BombermanComponent();
-         bombermanComponent.setKeyBindings(keyBindingsPlayer1, keyBindingsPlayer2); // Pass key bindings to the component
+         bombermanComponent.setKeyBindings(keyBindingsPlayer1, keyBindingsPlayer2, keyBindingsPlayer3); // Pass key bindings to the component
         bombermanComponent.setupKeyListeners(); // Setup key listeners with new bindings
         
         // Initialize players with default images and positions

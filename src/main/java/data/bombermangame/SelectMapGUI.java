@@ -32,10 +32,10 @@ public class SelectMapGUI extends JFrame {
         gbc.insets = new Insets(5, 0, 20, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Map buttons with images
-        seaButton = createMapButton("Sea", new ImageIcon("sea.jpeg"));
-        desertButton = createMapButton("Desert", new ImageIcon("desert.jpeg"));
-        hellButton = createMapButton("Hell", new ImageIcon("hell.jpeg"));
+        // images "./master/assets/Menu/
+        seaButton = createMapButton("Sea", new ImageIcon("assets/Menu/sea.jpeg"));
+        desertButton = createMapButton("Desert", new ImageIcon("assets/Menu/desert.jpeg"));
+        hellButton = createMapButton("Hell", new ImageIcon("assets/Menu/hell.jpeg"));
 
         // Map Selection Panel
         JPanel mapPanel = new JPanel(new GridLayout(1, 3, 10, 10));

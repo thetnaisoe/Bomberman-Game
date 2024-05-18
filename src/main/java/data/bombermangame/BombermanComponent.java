@@ -26,6 +26,7 @@ import javax.swing.Timer;
 public class BombermanComponent extends JComponent {
      private Map<String, Integer> keyBindingsPlayer1;
     private Map<String, Integer> keyBindingsPlayer2;
+    private Map<String, Integer> keyBindingsPlayer3;
 
     public int countdownTimeInSeconds = 90; // Example countdown time
     private Timer countdownTimer;
@@ -38,6 +39,8 @@ public class BombermanComponent extends JComponent {
     public Monster monster;
     private HashMap<Player, HashSet<Integer>> playerKeyMap = new HashMap<>();
     public static ArrayList<Bomb> bombs = new ArrayList<>();
+    public boolean isTreePlayers;
+    int numberOfPlayers = SelectPlayersGUI.numberOfPlayers;
     private Image fieldImage;
     private Image wallImage;
     private Image boxImage;
@@ -150,11 +153,14 @@ public class BombermanComponent extends JComponent {
         }
           keyBindingsPlayer1 = loadKeyBindingsPlayer1();
         keyBindingsPlayer2 = loadKeyBindingsPlayer2();
+        keyBindingsPlayer3 = loadKeyBindingsPlayer3();
         //setupKeyListeners();
         setFocusable(true);
         
          File file1 = new File("keybindings1.dat");
     File file2 = new File("keybindings2.dat");
+    File file3 = new File("keybindings3.dat");
+    
 
     if (!file1.exists()) {
         saveDefaultKeyBindings("keybindings1.dat", getDefaultKeyBindingsPlayer1());
@@ -162,6 +168,10 @@ public class BombermanComponent extends JComponent {
     if (!file2.exists()) {
         saveDefaultKeyBindings("keybindings2.dat", getDefaultKeyBindingsPlayer2());
     }
+    if (!file2.exists()) {
+        saveDefaultKeyBindings("keybindings3.dat", getDefaultKeyBindingsPlayer3());
+    }
+
 
         
     }
@@ -182,6 +192,10 @@ public class BombermanComponent extends JComponent {
     @SuppressWarnings("unchecked")
     private Map<String, Integer> loadKeyBindingsPlayer2() {
         return loadKeyBindingsFromFile("keybindings2.dat", getDefaultKeyBindingsPlayer2());
+    }
+    @SuppressWarnings("unchecked")
+    private Map<String, Integer> loadKeyBindingsPlayer3() {
+        return loadKeyBindingsFromFile("keybindings3.dat", getDefaultKeyBindingsPlayer3());
     }
 
     private Map<String, Integer> loadKeyBindingsFromFile(String filename, Map<String, Integer> defaultBindings) {
@@ -213,6 +227,16 @@ public class BombermanComponent extends JComponent {
         defaultBindings.put("RIGHT", KeyEvent.VK_RIGHT);
         defaultBindings.put("BOMB", KeyEvent.VK_ENTER);
         defaultBindings.put("OBSTACLE", KeyEvent.VK_L);
+        return defaultBindings;
+    }
+    private Map<String, Integer> getDefaultKeyBindingsPlayer3() {
+        Map<String, Integer> defaultBindings = new HashMap<>();
+        defaultBindings.put("UP", KeyEvent.VK_T);
+        defaultBindings.put("DOWN", KeyEvent.VK_G);
+        defaultBindings.put("LEFT", KeyEvent.VK_F);
+        defaultBindings.put("RIGHT", KeyEvent.VK_H);
+        defaultBindings.put("BOMB", KeyEvent.VK_Y);
+        defaultBindings.put("OBSTACLE", KeyEvent.VK_U);
         return defaultBindings;
     }
     
@@ -280,9 +304,10 @@ public void setupKeyListeners() {
     }
     setFocusable(true); // Ensure the component can gain focus
 }
-public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2) {
+public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2, Map<String, Integer> keyBindingsPlayer3) {
         this.keyBindingsPlayer1 = keyBindingsPlayer1;
         this.keyBindingsPlayer2 = keyBindingsPlayer2;
+        this.keyBindingsPlayer3 = keyBindingsPlayer3;
     }
 
 

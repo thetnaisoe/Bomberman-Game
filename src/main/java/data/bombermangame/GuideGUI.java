@@ -17,6 +17,7 @@ import java.util.Map;
 public class GuideGUI extends JFrame {
     private Map<String, Integer> keyBindingsPlayer1;
     private Map<String, Integer> keyBindingsPlayer2;
+    private Map<String, Integer> keyBindingsPlayer3;
 
     public GuideGUI() {
         setTitle("Bomberman - Main Menu");
@@ -25,6 +26,7 @@ public class GuideGUI extends JFrame {
 
         keyBindingsPlayer1 = loadKeyBindingsPlayer1();
         keyBindingsPlayer2 = loadKeyBindingsPlayer2();
+        keyBindingsPlayer3 = loadKeyBindingsPlayer3();
 
         JButton player1Button = new JButton("Customize Player 1 Controls");
         player1Button.addActionListener(new ActionListener() {
@@ -41,6 +43,14 @@ public class GuideGUI extends JFrame {
                 new KeyBindingGUI(GuideGUI.this, 2, keyBindingsPlayer2);
             }
         });
+        
+        JButton player3Button = new JButton("Customize Player 3 Controls");
+        player2Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new KeyBindingGUI(GuideGUI.this, 3, keyBindingsPlayer3);
+            }
+        });
 
         JButton startGameButton = new JButton("Start Game");
         startGameButton.addActionListener(new ActionListener() {
@@ -48,7 +58,7 @@ public class GuideGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                  System.out.println("Start Game button clicked"); // Debugging
                 BombermanFrame gameFrame = new BombermanFrame();
-        gameFrame.setKeyBindings(keyBindingsPlayer1, keyBindingsPlayer2); // Set key bindings
+        gameFrame.setKeyBindings(keyBindingsPlayer1, keyBindingsPlayer2,keyBindingsPlayer3    ); // Set key bindings
         gameFrame.setupGame(); // Initialize game after setting key bindings
                 dispose(); // Close the main menu
             }
@@ -66,6 +76,9 @@ public class GuideGUI extends JFrame {
     @SuppressWarnings("unchecked")
     private Map<String, Integer> loadKeyBindingsPlayer1() {
         return loadKeyBindingsFromFile("keybindings1.dat", getDefaultKeyBindingsPlayer1());
+    }
+     private Map<String, Integer> loadKeyBindingsPlayer3() {
+        return loadKeyBindingsFromFile("keybindings3.dat", getDefaultKeyBindingsPlayer3());
     }
 
     @SuppressWarnings("unchecked")
@@ -116,6 +129,17 @@ public class GuideGUI extends JFrame {
         defaultBindings.put("RIGHT", KeyEvent.VK_RIGHT);
         defaultBindings.put("BOMB", KeyEvent.VK_ENTER);
         defaultBindings.put("OBSTACLE", KeyEvent.VK_L);
+        return defaultBindings;
+    }
+    
+    private Map<String, Integer> getDefaultKeyBindingsPlayer3() {
+        Map<String, Integer> defaultBindings = new HashMap<>();
+        defaultBindings.put("UP", KeyEvent.VK_T);
+        defaultBindings.put("DOWN", KeyEvent.VK_G);
+        defaultBindings.put("LEFT", KeyEvent.VK_F);
+        defaultBindings.put("RIGHT", KeyEvent.VK_H);
+        defaultBindings.put("BOMB", KeyEvent.VK_Y);
+        defaultBindings.put("OBSTACLE", KeyEvent.VK_U);
         return defaultBindings;
     }
 
