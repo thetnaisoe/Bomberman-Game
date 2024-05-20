@@ -291,24 +291,32 @@ public class BombermanComponent extends JComponent {
     }
 
     
-public void setupKeyListeners() {
-    // Remove existing key listeners to avoid duplicates
-    for (KeyListener listener : getKeyListeners()) {
-        removeKeyListener(listener);
+    public void setupKeyListeners() {
+        // Remove existing key listeners to avoid duplicates
+        for (KeyListener listener : getKeyListeners()) {
+            removeKeyListener(listener);
+        }
+
+        // Add key listeners for each player
+        for (Player player : players) {
+            addKeyListener(createKeyListenerForPlayer(player));
+        }
+        setFocusable(true); // Ensure the component can gain focus
     }
 
-    // Add key listeners for each player
-    for (int i = 0; i < players.size(); i++) {
-        Player player = players.get(i);
-        addKeyListener(createKeyListenerForPlayer(player, i));
+public void setKeyBindings(List<Map<String, Integer>> keyBindingsList) {
+    // Initialize players with default images and positions
+    ArrayList<Player> players = new ArrayList<>();
+    for (int i = 0; i < keyBindingsList.size(); i++) {
+        Player player = new Player("Player" + (i + 1), i * 10, i * 10, this, monsters,"assets/players/bombermanfrontgreen.png", keyBindingsList.get(i));
+        players.add(player);
+        updatePlayerKeys(player, player.getKeyBindings().get("UP"), player.getKeyBindings().get("DOWN"), player.getKeyBindings().get("LEFT"), player.getKeyBindings().get("RIGHT"), player.getKeyBindings().get("BOMB"), player.getKeyBindings().get("OBSTACLE"));
     }
-    setFocusable(true); // Ensure the component can gain focus
+
+    setPlayers(players);
+    setupPlayerControls();
+    setupKeyListeners(); // Setup key listeners with new bindings
 }
-public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2, Map<String, Integer> keyBindingsPlayer3) {
-        this.keyBindingsPlayer1 = keyBindingsPlayer1;
-        this.keyBindingsPlayer2 = keyBindingsPlayer2;
-        this.keyBindingsPlayer3 = keyBindingsPlayer3;
-    }
 
 
     
@@ -327,8 +335,8 @@ public void updatePlayerKeys(Player player, int upKey, int downKey, int leftKey,
 // Call this method when initializing or when key settings change
 public void setupPlayerControls() {
     for (Player player : players) {
-        // Assume default keys or retrieve them from player preferences
-        updatePlayerKeys(player, player.getUpKey(), player.getDownKey(), player.getLeftKey(), player.getRightKey(), player.getBombKey(), player.getObstacleKey());
+        Map<String, Integer> keyBindings = player.getKeyBindings();
+        updatePlayerKeys(player, keyBindings.get("UP"), keyBindings.get("DOWN"), keyBindings.get("LEFT"), keyBindings.get("RIGHT"), keyBindings.get("BOMB"), keyBindings.get("OBSTACLE"));
     }
 }
 
@@ -343,41 +351,15 @@ public void setupPlayerControls() {
         keySet.add(obstacleKey);
         playerKeyMap.put(player, keySet);
     }
-/*private KeyAdapter createKeyListenerForPlayer(Player player) {
-    return new KeyAdapter() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (playerKeyMap.get(player).contains(e.getKeyCode())) {
-                handlePlayerAction(player, e.getKeyCode());
-            }
-        }
-    };
-}
 
-private void handlePlayerAction(Player player, int keyCode) {
-    if (keyCode == player.getUpKey()) {
-        player.moveUp(tiles);
-    } else if (keyCode == player.getDownKey()) {
-        player.moveDown(tiles);
-    } else if (keyCode == player.getLeftKey()) {
-        player.moveLeft(tiles);
-    } else if (keyCode == player.getRightKey()) {
-        player.moveRight(tiles);
-    } else if (keyCode == player.getBombKey()) {
-        player.dropBomb(tiles, bombs);
-    } else if (keyCode == player.getObstacleKey()) {
-        player.placeObstacle(tiles);
-    }
-}
-*/
-private KeyAdapter createKeyListenerForPlayer(Player player, int playerIndex) {
+private KeyAdapter createKeyListenerForPlayer(Player player) {
     return new KeyAdapter() {
         @Override
         public void keyPressed(KeyEvent e) {
-            Map<String, Integer> keyBindings = (playerIndex == 0) ? keyBindingsPlayer1 : keyBindingsPlayer2;
+            Map<String, Integer> keyBindings = player.getKeyBindings();
             int keyCode = e.getKeyCode();
 
-            if (keyBindings != null && keyBindings.containsValue(keyCode)) {
+            if (playerKeyMap.get(player).contains(keyCode)) {
                 if (keyCode == keyBindings.get("UP")) {
                     player.moveUp(tiles);
                 } else if (keyCode == keyBindings.get("DOWN")) {
@@ -399,9 +381,8 @@ private KeyAdapter createKeyListenerForPlayer(Player player, int playerIndex) {
 
 // Example of how to add the key listener to players
 public void initializePlayers() {
-    for (int i = 0; i < players.size(); i++) {
-        Player player = players.get(i);
-        addKeyListener(createKeyListenerForPlayer(player, i));
+    for (Player player : players) {
+        addKeyListener(createKeyListenerForPlayer(player));
     }
 }
 

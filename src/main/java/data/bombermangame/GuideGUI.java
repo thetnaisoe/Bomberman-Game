@@ -18,11 +18,12 @@ public class GuideGUI extends JFrame {
     private Map<String, Integer> keyBindingsPlayer1;
     private Map<String, Integer> keyBindingsPlayer2;
     private Map<String, Integer> keyBindingsPlayer3;
+    private int playerCount = 2; // Default to 2 players
 
     public GuideGUI() {
         setTitle("Bomberman - Main Menu");
-        setSize(300, 200);
-        setLayout(new GridLayout(3, 1));
+        setSize(400, 200);
+        setLayout(new GridLayout(4, 1));
 
         keyBindingsPlayer1 = loadKeyBindingsPlayer1();
         keyBindingsPlayer2 = loadKeyBindingsPlayer2();
@@ -44,28 +45,38 @@ public class GuideGUI extends JFrame {
             }
         });
         
-        JButton player3Button = new JButton("Customize Player 3 Controls");
-        player2Button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new KeyBindingGUI(GuideGUI.this, 3, keyBindingsPlayer3);
-            }
-        });
+        add(player1Button);
+        add(player2Button);
+        
+        if (SelectPlayersGUI.numberOfPlayers >= 3) {
+            JButton player3Button = new JButton("Customize Player 3 Controls");
+            player3Button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new KeyBindingGUI(GuideGUI.this, 3, keyBindingsPlayer3);
+                }
+            });
+            add(player3Button);
+        }
 
         JButton startGameButton = new JButton("Start Game");
         startGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                 System.out.println("Start Game button clicked"); // Debugging
-                BombermanFrame gameFrame = new BombermanFrame();
-        gameFrame.setKeyBindings(keyBindingsPlayer1, keyBindingsPlayer2,keyBindingsPlayer3    ); // Set key bindings
-        gameFrame.setupGame(); // Initialize game after setting key bindings
-                dispose(); // Close the main menu
-            }
-        });
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.out.println("Start Game button clicked"); // Debugging
+            BombermanFrame gameFrame = new BombermanFrame();
+            java.util.List<Map<String, Integer>> keyBindingsList = new java.util.ArrayList<>();
+                keyBindingsList.add(keyBindingsPlayer1);
+                keyBindingsList.add(keyBindingsPlayer2);
+                if (SelectPlayersGUI.numberOfPlayers >= 3) {
+                    keyBindingsList.add(keyBindingsPlayer3);
+                }
+            gameFrame.setKeyBindings(keyBindingsList); // Set key bindings
+            gameFrame.setupGame(); // Initialize game after setting key bindings
+            dispose(); // Close the main menu
+        }
+    });
 
-        add(player1Button);
-        add(player2Button);
         add(startGameButton);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

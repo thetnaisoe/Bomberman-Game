@@ -212,17 +212,13 @@ public class BombermanFrame extends JFrame{
     }
     
     public void inisetKeyBtializeGame() {
-    setupGame();
-}
+        setupGame();
+    }
     
-        public void setKeyBindings(Map<String, Integer> keyBindingsPlayer1, Map<String, Integer> keyBindingsPlayer2, Map<String, Integer> keyBindingsPlayer3) {
-        this.keyBindingsPlayer1 = keyBindingsPlayer1;
-        this.keyBindingsPlayer2 = keyBindingsPlayer2;
-        this.keyBindingsPlayer3 = keyBindingsPlayer3;
-
+    public void setKeyBindings(java.util.List<Map<String, Integer>> keyBindingsList){
 
        // BombermanComponent bombermanComponent = new BombermanComponent();
-         bombermanComponent.setKeyBindings(keyBindingsPlayer1, keyBindingsPlayer2, keyBindingsPlayer3); // Pass key bindings to the component
+        bombermanComponent.setKeyBindings(keyBindingsList); // Pass key bindings to the component
         bombermanComponent.setupKeyListeners(); // Setup key listeners with new bindings
         
         // Initialize players with default images and positions

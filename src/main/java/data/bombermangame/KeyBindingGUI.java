@@ -80,7 +80,7 @@ public class KeyBindingGUI extends JFrame {
     }
 
     private void saveKeyBindings(int playerNumber) {
-        String filename = playerNumber == 1 ? "keybindings1.dat" : "keybindings2.dat";
+        String filename = "keybindings" + playerNumber + ".dat";
         try (FileOutputStream fos = new FileOutputStream(filename);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(keyBindings);

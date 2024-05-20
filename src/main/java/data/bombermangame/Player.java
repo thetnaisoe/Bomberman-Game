@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimerTask;
 import javax.swing.Timer;
 /**
@@ -392,5 +393,6 @@ public void updatePowerUps() {
     // Place Obstacle
     public int getObstacleKey() { return obstacleKey; }
     public void setObstacleKey(int key) { this.obstacleKey = key; }
+    
 }
 
