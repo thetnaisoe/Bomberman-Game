@@ -5,11 +5,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * BombermanGame is the main entry point for the Bomberman game.
+ * It provides a main menu with start and quit options.
+ */
 public class BombermanGame extends JFrame {
     private JButton startButton;
     private JButton quitButton;
     private JLabel backgroundLabel;
 
+    /**
+     * Constructs the BombermanGame frame, sets its properties, and initializes components.
+     */
     public BombermanGame() {
         setTitle("Bomberman Game");
         setSize(1024, 768); // Adjust if needed
@@ -19,6 +26,9 @@ public class BombermanGame extends JFrame {
         setLocationRelativeTo(null); // Center the window on the screen
     }
 
+    /**
+     * Initializes the components of the main menu, including buttons and background image.
+     */
     private void initializeComponents() {
         // Initialize buttons
         startButton = new JButton("START");
@@ -76,6 +86,10 @@ public class BombermanGame extends JFrame {
         add(backgroundLabel, BorderLayout.CENTER);
     }
 
+    /**
+     * Action to perform when the Start button is pressed.
+     * Hides the main menu and opens the SelectPlayersGUI window.
+     */
     private void onStart() {
         // Hide the main menu
         setVisible(false);
@@ -85,12 +99,21 @@ public class BombermanGame extends JFrame {
         selectPlayersGUI.setVisible(true);
     }
 
+    /**
+     * Action to perform when the Quit button is pressed.
+     * Quits the game by disposing the frame.
+     */
     private void onQuit() {
         // Quit button logic goes here
         System.out.println("Quit game...");
         dispose(); // Close the window
     }
 
+    /**
+     * Main method to run the Bomberman game.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new BombermanGame().setVisible(true));
     }
