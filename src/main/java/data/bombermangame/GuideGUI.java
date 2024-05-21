@@ -14,12 +14,24 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+    /**
+    * Represents the main menu of the Bomberman game.
+    * This class is responsible for managing the game's main menu, which includes options to customize controls for each player and start the game.
+    * It also handles loading and saving of key bindings for each player.
+    * 
+    * @author lenovo
+    */
+
 public class GuideGUI extends JFrame {
     private Map<String, Integer> keyBindingsPlayer1;
     private Map<String, Integer> keyBindingsPlayer2;
     private Map<String, Integer> keyBindingsPlayer3;
     private int playerCount = 2; // Default to 2 players
-
+    
+    /**
+     * Constructs a new GuideGUI object.
+     * This method initializes the main menu and its components.
+     */
     public GuideGUI() {
         setTitle("Bomberman - Main Menu");
         setSize(400, 200);
@@ -96,7 +108,13 @@ public class GuideGUI extends JFrame {
     private Map<String, Integer> loadKeyBindingsPlayer2() {
         return loadKeyBindingsFromFile("keybindings2.dat", getDefaultKeyBindingsPlayer2());
     }
-
+    
+    /**
+     * Loads the key bindings for player 1 from a file.
+     * If the file does not exist, it creates a new file with the default key bindings.
+     *
+     * @return the key bindings for player 1
+     */
     private Map<String, Integer> loadKeyBindingsFromFile(String filename, Map<String, Integer> defaultBindings) {
         File file = new File(filename);
         if (!file.exists()) {
@@ -112,6 +130,13 @@ public class GuideGUI extends JFrame {
         }
     }
 
+    /**
+     * Saves the specified key bindings to a file.
+     * This method uses Java's serialization API to write the key bindings to a file.
+     *
+     * @param filename the name of the file to save the key bindings to
+     * @param keyBindings the key bindings to save
+     */
     private void saveKeyBindings(String filename, Map<String, Integer> keyBindings) {
         try (FileOutputStream fos = new FileOutputStream(filename);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
@@ -121,6 +146,12 @@ public class GuideGUI extends JFrame {
         }
     }
 
+    /**
+     * Returns the default key bindings for player 1.
+     * The default key bindings are W for up, S for down, A for left, D for right, Space for bomb, and O for obstacle.
+     *
+     * @return the default key bindings for player 1
+     */
     private Map<String, Integer> getDefaultKeyBindingsPlayer1() {
         Map<String, Integer> defaultBindings = new HashMap<>();
         defaultBindings.put("UP", KeyEvent.VK_W);
@@ -132,6 +163,12 @@ public class GuideGUI extends JFrame {
         return defaultBindings;
     }
 
+    /**
+     * Returns the default key bindings for player 2.
+     * The default key bindings are Up arrow for up, Down arrow for down, Left arrow for left, Right arrow for right, Enter for bomb, and L for obstacle.
+     *
+     * @return the default key bindings for player 2
+     */
     private Map<String, Integer> getDefaultKeyBindingsPlayer2() {
         Map<String, Integer> defaultBindings = new HashMap<>();
         defaultBindings.put("UP", KeyEvent.VK_UP);
@@ -143,6 +180,12 @@ public class GuideGUI extends JFrame {
         return defaultBindings;
     }
     
+    /**
+     * Returns the default key bindings for player 3.
+     * The default key bindings are T for up, G for down, F for left, H for right, Y for bomb, and U for obstacle.
+     *
+     * @return the default key bindings for player 3
+     */
     private Map<String, Integer> getDefaultKeyBindingsPlayer3() {
         Map<String, Integer> defaultBindings = new HashMap<>();
         defaultBindings.put("UP", KeyEvent.VK_T);
@@ -154,6 +197,11 @@ public class GuideGUI extends JFrame {
         return defaultBindings;
     }
 
+    /**
+     * The main method that starts the game's main menu.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
         new GuideGUI();
     }

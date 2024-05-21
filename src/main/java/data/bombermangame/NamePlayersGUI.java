@@ -6,12 +6,24 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the GUI for entering player names in the Bomberman game.
+ * This class extends JFrame and provides a user interface for entering the names of a specified number of players.
+ * The names are stored in a static list and can be retrieved using the getAllNames method.
+ * The GUI includes a submit button that checks if all names have been entered and then closes the window and opens the SelectMapGUI.
+ *
+ */
 public class NamePlayersGUI extends JFrame {
     private List<JTextField> nameFields;
     private JButton submitButton;
     private final int numberOfPlayers;
     public static List<String> allNames = new ArrayList<>(); // Static list to store all names
-
+    
+    /**
+     * Constructs a new NamePlayersGUI with the specified number of players.
+     *
+     * @param numberOfPlayers the number of players for whom to enter names
+     */
     public NamePlayersGUI(int numberOfPlayers) {
         this.numberOfPlayers = numberOfPlayers;
         setTitle("Enter Players Name");
@@ -21,7 +33,11 @@ public class NamePlayersGUI extends JFrame {
         setLocationRelativeTo(null);
         initializeComponents();
     }
-
+    
+    /**
+     * Initializes the components of the GUI.
+     * This method is called in the constructor to set up the GUI.
+     */
     private void initializeComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 50, 10, 50);
@@ -70,7 +86,14 @@ public class NamePlayersGUI extends JFrame {
 
         submitButton.addActionListener(this::onSubmit);
     }
-
+    
+    /**
+     * Handles the action of clicking the submit button.
+     * This method checks if all names have been entered. If not, it displays an error message.
+     * If all names have been entered, it closes the window and opens the SelectMapGUI.
+     *
+     * @param e the action event
+     */
     private void onSubmit(ActionEvent e) {
         StringBuilder missingNames = new StringBuilder();
         allNames.clear(); // Clear the list before adding new names
@@ -97,11 +120,22 @@ public class NamePlayersGUI extends JFrame {
             });
         }
     }
-
+    
+    /**
+     * Returns the list of all entered player names.
+     *
+     * @return the list of all entered player names
+     */
     public static List<String> getAllNames() {
         return allNames;
     }
-
+    
+    /**
+     * The main method for testing the NamePlayersGUI.
+     * This method creates a new NamePlayersGUI for 2 players and makes it visible.
+     *
+     * @param args the command-line arguments
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new NamePlayersGUI(2).setVisible(true)); // Example for 2 players
     }

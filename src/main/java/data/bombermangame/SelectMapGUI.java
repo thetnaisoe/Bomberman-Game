@@ -3,12 +3,24 @@ package data.bombermangame;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Represents a GUI for selecting a map in the Bomberman game.
+ * This class extends JFrame and provides a user interface for selecting a map from a set of options.
+ * The selected map is stored in a private field and can be used in the game logic.
+ * The GUI includes buttons for each map and a "Next" button to proceed to the next step.
+ *
+ * @author lenovo
+ */
 public class SelectMapGUI extends JFrame {
     private JButton seaButton;
     private JButton desertButton;
     private JButton hellButton;
     private String selectedMap;
-
+    
+    /**
+     * Constructs a new SelectMapGUI.
+     * Initializes the GUI components and sets up the action listeners.
+     */
     public SelectMapGUI() {
         setTitle("Choose Map");
         setSize(1024, 768);
@@ -17,7 +29,11 @@ public class SelectMapGUI extends JFrame {
         setLocationRelativeTo(null); // Center the window on the screen
         initializeComponents();
     }
-
+    
+    /**
+     * Initializes the components of the GUI.
+     * This includes setting up the layout, creating the buttons, and adding action listeners.
+     */
     private void initializeComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -66,7 +82,14 @@ public class SelectMapGUI extends JFrame {
         // Action listener for the Next button
         nextButton.addActionListener(e -> onNext());
     }
-
+    
+    /**
+     * Creates a button for a map with the specified name and icon.
+     *
+     * @param mapName the name of the map
+     * @param icon the icon for the map
+     * @return the created button
+     */
     private JButton createMapButton(String mapName, ImageIcon icon) {
         JButton button = new JButton();
         button.setIcon(resizeIcon(icon, 150, 150));
@@ -78,19 +101,36 @@ public class SelectMapGUI extends JFrame {
 
         return button;
     }
-
+    
+    /**
+     * Resizes an icon to the specified width and height.
+     *
+     * @param icon the icon to resize
+     * @param width the desired width
+     * @param height the desired height
+     * @return the resized icon
+     */
     private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
         Image image = icon.getImage();
         Image resizedImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
         return new ImageIcon(resizedImage);
     }
-
+    
+    /**
+     * Selects a map and stores its name in the selectedMap field.
+     *
+     * @param mapName the name of the map to select
+     */
     private void selectMap(String mapName) {
         this.selectedMap = mapName;
         System.out.println("Map selected: " + selectedMap);
         // Additional logic for when a map is selected can be added here
     }
-
+    
+    /**
+     * Handles the action of clicking the "Next" button.
+     * This method prints the selected map, disposes the current window, and opens the GuideGUI.
+     */
     private void onNext() {
         System.out.println("Selected map: " + selectedMap);
 
@@ -106,7 +146,13 @@ public class SelectMapGUI extends JFrame {
             }
         });
     }
-
+    
+    /**
+     * The main method for the SelectMapGUI class.
+     * Creates a new SelectMapGUI and makes it visible.
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new SelectMapGUI().setVisible(true));
     }

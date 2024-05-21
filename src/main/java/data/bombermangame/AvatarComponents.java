@@ -6,12 +6,23 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Represents the avatar components in the game.
+ * This class is responsible for loading and resizing the avatar images.
+ * It provides getter methods to access the images.
+ * 
+ * @author Thet Naing Soe
+ */
 public class AvatarComponents {
 
     private BufferedImage image1;
     private BufferedImage image2;
     private BufferedImage image3;
 
+    /**
+     * Constructs a new AvatarComponents object.
+     * This constructor loads and resizes the avatar images.
+     */
     public AvatarComponents() {
         try {
             // Load the first image and resize it
@@ -32,7 +43,14 @@ public class AvatarComponents {
         }
     }
 
-    // Method to resize an image
+    /**
+     * Resizes the given image to the specified width and height.
+     *
+     * @param originalImage the original image to resize
+     * @param width the desired width of the resized image
+     * @param height the desired height of the resized image
+     * @return the resized image
+     */
     private BufferedImage resizeImage(BufferedImage originalImage, int width, int height) {
         BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = resizedImage.createGraphics();
@@ -41,15 +59,29 @@ public class AvatarComponents {
         return resizedImage;
     }
 
-    // Getter methods for accessing the images
+    /**
+     * Returns the first avatar image.
+     *
+     * @return the first avatar image
+     */
     public BufferedImage getImage1() {
         return image1;
     }
 
+    /**
+     * Returns the second avatar image.
+     *
+     * @return the second avatar image
+     */
     public BufferedImage getImage2() {
         return image2;
     }
 
+    /**
+     * Returns the third avatar image.
+     *
+     * @return the third avatar image
+     */
     public BufferedImage getImage3() {
         return image3;
     }

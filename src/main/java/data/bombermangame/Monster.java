@@ -11,7 +11,12 @@ import java.io.IOException;
 import java.awt.Image;
 import java.awt.Rectangle;
 import javax.swing.JOptionPane;
+
 /**
+ * Represents a monster in the Bomberman game.
+ * This class provides methods for moving the monster in a random direction and handling collisions with players.
+ * The monster is represented by an image and is located on a grid of tiles.
+ * The monster can collide with players, causing them to die.
  *
  * @author ThetNaingSoe
  */
@@ -25,7 +30,15 @@ public class Monster {
     private ArrayList<Player> players;
     public boolean isAlive;
 
-   
+    /**
+     * Constructs a new Monster with the specified tiles, initial position, players, and image path.
+     *
+     * @param tiles the grid of tiles on which the monster is located
+     * @param initialRow the initial row of the monster
+     * @param initialCol the initial column of the monster
+     * @param players the list of players in the game
+     * @param imagePath the path to the image file representing the monster
+     */   
     public Monster(Tile[][] tiles, int initialRow, int initialCol, ArrayList<Player> players, String imagePath) {
         // Store references
         this.tiles = tiles;
@@ -44,14 +57,28 @@ public class Monster {
         }
     }
     
+    /**
+     * Returns the bounding rectangle of the monster.
+     *
+     * @return the bounding rectangle of the monster
+     */
     public Rectangle getBounds() {
         return new Rectangle(currentCol * SQUARE_SIZE, currentRow * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
     }
     
+    /**
+     * Returns the image of the monster.
+     *
+     * @return the image of the monster
+     */
     public Image getMonsterImage() {
         return monsterImage;
     }
-    
+
+    /**
+     * Moves the monster in a random direction.
+     * The monster can move up, down, left, or right, but cannot move onto a non-passable tile or onto a tile occupied by a player.
+     */
     public void moveToRandomDirection() {
         Random random = new Random();
         int direction = random.nextInt(4); // Generate a random direction (0: up, 1: down, 2: left, 3: right)
@@ -82,6 +109,14 @@ public class Monster {
         }
     } 
     
+    /**
+     * Checks if the monster collides with a player at the specified position.
+     * If the monster collides with a player, it handles the collision by calling the handlePlayerCollision method.
+     *
+     * @param row the row of the position to check
+     * @param col the column of the position to check
+     * @return true if the monster collides with a player, false otherwise
+     */    
     public boolean collidesWithPlayer(int row, int col) {
         for (Player player : players) { // Assuming you have access to the players list
             if (player.isAlive && player.currentRow == row && player.currentCol == col) {
@@ -92,12 +127,14 @@ public class Monster {
         return false; 
     }
 
+    /**
+     * Handles a collision between the monster and a player.
+     * This method is called when the monster collides with a player.
+     * It kills the player by setting the player's isAlive property to false.
+     *
+     * @param player the player with whom the monster has collided
+     */
     public void handlePlayerCollision(Player player) {
         player.isAlive = false;
     }
-
-//    public void endGame(Player winner) {
-//        // Display a pop-up message with the winner's name
-//        JOptionPane.showMessageDialog(null, winner.getName() + " is the winner!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-//    }
 }

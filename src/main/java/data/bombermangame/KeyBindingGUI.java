@@ -13,10 +13,25 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
+/**
+ * Represents the GUI for setting key bindings in the Bomberman game.
+ * This class extends JFrame and provides a user interface for setting the key bindings for a player.
+ * The key bindings are saved to a file when the user clicks the "Save" button.
+ *
+ * @author lenovo
+ */
+
 public class KeyBindingGUI extends JFrame {
     private Map<String, Integer> keyBindings;
     private JTextField upField, downField, leftField, rightField, bombField, obstacleField;
-
+    
+    /**
+     * Constructs a new KeyBindingGUI with the specified parent frame, player number, and key bindings.
+     *
+     * @param parent the parent frame of this KeyBindingGUI
+     * @param playerNumber the number of the player for whom the key bindings are being set
+     * @param keyBindings the current key bindings
+     */
     public KeyBindingGUI(JFrame parent, int playerNumber, Map<String, Integer> keyBindings) {
         this.keyBindings = keyBindings;
 
@@ -65,7 +80,14 @@ public class KeyBindingGUI extends JFrame {
         setLocationRelativeTo(parent);
         setVisible(true);
     }
-
+    
+    /**
+     * Creates a JTextField for the specified action.
+     * The JTextField displays the current key binding for the action and updates the key binding when a key is pressed.
+     *
+     * @param action the action for which to create a JTextField
+     * @return the created JTextField
+     */
     private JTextField createKeyField(String action) {
         JTextField keyField = new JTextField(10);
         keyField.setText(KeyEvent.getKeyText(keyBindings.get(action)));
@@ -78,7 +100,14 @@ public class KeyBindingGUI extends JFrame {
         });
         return keyField;
     }
-
+    
+    /**
+     * Saves the key bindings to a file.
+     * The file is named "keybindings" followed by the player number and ".dat".
+     * If an error occurs while saving the key bindings, the error is printed to the standard error stream.
+     *
+     * @param playerNumber the number of the player for whom the key bindings are being saved
+     */
     private void saveKeyBindings(int playerNumber) {
         String filename = "keybindings" + playerNumber + ".dat";
         try (FileOutputStream fos = new FileOutputStream(filename);
