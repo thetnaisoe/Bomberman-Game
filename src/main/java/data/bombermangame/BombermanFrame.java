@@ -307,6 +307,7 @@ public class BombermanFrame extends JFrame {
                     200
             );
         }
+        updateScoreLabels();
     }
 
     /**
